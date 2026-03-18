@@ -2,16 +2,6 @@
 
 ## 如何使用
 
-在 src/config 文件夹下 创建 shihua.js 文件
-里面写入: (百度识花用的)
-接口申请地址: http://ai.baidu.com/tech/imagerecognition
-
-```javascript
-exports.APP_ID = ''
-exports.API_KEY = ''
-exports.SECRET_KEY = ''
-```
-
 install bun, MongoDB, And start the
 
 ```bash
