@@ -1,4 +1,5 @@
 /* eslint-disable node/prefer-global/process */
+import { mkdir } from 'node:fs/promises'
 import { staticPlugin } from '@elysiajs/static'
 import { Elysia } from 'elysia'
 
@@ -8,6 +9,11 @@ import { frontendRouter } from './routes/frontend'
 import { uploadRouter } from './routes/upload'
 
 const port = process.env.PORT || '4000'
+
+;(async () => {
+    const UPLOAD_DIR = './uploads'
+    await mkdir(UPLOAD_DIR, { recursive: true })
+})()
 
 const app = new Elysia({
     serve: {
