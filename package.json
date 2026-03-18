@@ -1,15 +1,44 @@
 {
-  "name": "app",
-  "version": "1.0.50",
+  "name": "mmf-blog-api-elysia",
+  "type": "module",
+  "version": "1.0.0",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
+    "dev": "bun run --watch src/index.ts",
+    "build": "bun build --minify --outfile ./dist/index.js src/index.ts --target bun",
+    "build:compile": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server src/index.ts",
+    "init:config": "tsx src/init.ts",
+    "start": "bun run dist/index.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:ts": "tsc --noEmit"
   },
   "dependencies": {
-    "elysia": "latest"
+    "@elysiajs/cors": "^1.4.1",
+    "@elysiajs/html": "^1.4.0",
+    "@elysiajs/static": "^1.4.7",
+    "@lincy/utils": "^0.7.3",
+    "dayjs": "^1.11.20",
+    "elysia": "latest",
+    "highlight.js": "^11.11.1",
+    "jsonwebtoken": "^9.0.3",
+    "lru-cache": "^11.2.7",
+    "markdown-it": "^14.1.1",
+    "md5": "^2.3.0",
+    "mongoose": "^9.3.1",
+    "mongoose-autopopulate": "^1.2.1",
+    "twig": "^2.0.0"
   },
   "devDependencies": {
-    "bun-types": "latest"
-  },
-  "module": "src/index.js"
+    "@lincy/eslint-config": "^6.5.2",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/markdown-it": "^14.1.2",
+    "@types/md5": "^2.3.6",
+    "@types/twig": "^1.12.17",
+    "bun-types": "latest",
+    "jiti": "^2.6.1",
+    "tsc": "^2.0.4",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.3"
+  }
 }
