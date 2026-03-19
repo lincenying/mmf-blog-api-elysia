@@ -14,11 +14,15 @@ export const responseWrapperMiddleware = new Elysia({
     name: 'response-wrapper',
 })
     .onAfterHandle(({ responseValue }) => {
+        let message = ''
+        if (typeof responseValue === 'string')
+            message = responseValue
         // 正常数据包装为成功响应
         const successResponse: ApiResponse<typeof responseValue> = {
             code: 200,
             success: true,
             data: responseValue,
+            message,
         }
 
         return successResponse
@@ -41,12 +45,12 @@ export const responseWrapperMiddleware = new Elysia({
             errorMessage = String(error)
         }
 
-        set.status = statusCode
+        set.status = 200
 
         const errorResponse: ApiResponse<never> = {
-            code: 0,
+            code: statusCode,
             success: false,
-            error: errorMessage,
+            message: errorMessage,
         }
 
         return errorResponse
