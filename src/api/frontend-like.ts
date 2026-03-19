@@ -1,5 +1,6 @@
-import { ApiError } from '~/types'
+import mongoose from '~/mongoose'
 
+import { ApiError } from '~/types'
 import ArticleM from '../models/article'
 import { getErrorMessage } from '../utils'
 
@@ -12,6 +13,10 @@ export async function like(reqQuery: { id: string }, user_id?: string) {
     }
 
     const { id: article_id } = reqQuery
+
+    if (!article_id || !mongoose.Types.ObjectId.isValid(article_id)) {
+        throw new ApiError(201, '参数错误')
+    }
 
     try {
         const filter = {
@@ -49,6 +54,10 @@ export async function unlike(reqQuery: { id: string }, user_id?: string) {
     }
 
     const { id: article_id } = reqQuery
+
+    if (!article_id || !mongoose.Types.ObjectId.isValid(article_id)) {
+        throw new ApiError(201, '参数错误')
+    }
 
     try {
         const filter = {
