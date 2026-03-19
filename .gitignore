@@ -2,11 +2,8 @@
 node_modules/
 npm-debug.log
 admin.lock
-src/config/secret.js
-src/config/mpapp.js
-src/config/shihua.js
-src/config/qiniu.js
-src/config/tujidao.js
+src/config/_secret.js
+src/config/_qiniu.js
 uploads/
 
 *-port.txt
