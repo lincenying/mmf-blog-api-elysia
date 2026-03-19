@@ -35,19 +35,20 @@ export const accessLoggerMiddleware = new Elysia({ name: 'access-logger' })
         ({ request, startTime, requestId, clientInfo, userAgent }) => {
             // 记录请求开始
             const contentType = request.headers.get('content-type') ?? '未知'
+            if (!request.url.includes('/sm/')) {
+                logger.info(
+                    {
+                        requestId,
+                        method: request.method,
+                        url: request.url,
+                        userAgent,
+                        contentType,
+                        startTime: new Date(startTime).toISOString(),
+                    },
 
-            logger.info(
-                {
-                    requestId,
-                    method: request.method,
-                    url: request.url,
-                    userAgent,
-                    contentType,
-                    startTime: new Date(startTime).toISOString(),
-                },
-
-                `🕊️ ${request.method} ${new URL(request.url).pathname} - 客户端访问 [${clientInfo}]`,
-            )
+                    `🕊️ ${request.method} ${new URL(request.url).pathname} - 客户端访问 [${clientInfo}]`,
+                )
+            }
         },
     )
     .onAfterHandle(({ request, set, startTime, requestId, clientInfo }) => {
@@ -61,18 +62,20 @@ export const accessLoggerMiddleware = new Elysia({ name: 'access-logger' })
             = status >= 400 ? '错误' : status >= 300 ? '重定向' : '成功'
 
         // 记录请求完成
-        logger.info(
-            {
-                requestId,
-                method: request.method,
-                url: request.url,
-                status,
-                duration,
-                contentLength: set.headers?.['content-length'] ?? '未知',
-                endTime: new Date(endTime).toISOString(),
-            },
-            `${statusIcon} ${request.method} ${new URL(request.url).pathname} - ${statusText} ${status} (${duration}ms) [${clientInfo}]`,
-        )
+        if (!request.url.includes('/sm/')) {
+            logger.info(
+                {
+                    requestId,
+                    method: request.method,
+                    url: request.url,
+                    status,
+                    duration,
+                    contentLength: set.headers?.['content-length'] ?? '未知',
+                    endTime: new Date(endTime).toISOString(),
+                },
+                `${statusIcon} ${request.method} ${new URL(request.url).pathname} - ${statusText} ${status} (${duration}ms) [${clientInfo}]`,
+            )
+        }
     })
     .onError(({ request, error, startTime, requestId, clientInfo }) => {
         const endTime = Date.now()
