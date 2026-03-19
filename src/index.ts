@@ -1,16 +1,16 @@
-/* eslint-disable node/prefer-global/process */
 import { mkdir } from 'node:fs/promises'
-import { staticPlugin } from '@elysiajs/static'
 import { Elysia } from 'elysia'
 
+import { config } from '@/config'
+import { logger } from '@/utils/logger'
+import { accessLoggerMiddleware } from './middleware/access-logger'
+import { createStaticConfig, createSwaggerConfig } from './plugins'
 import { adminRouter } from './routes/admin'
 import { backendRouter } from './routes/backend'
 import { frontendRouter } from './routes/frontend'
 import { uploadRouter } from './routes/upload'
 
-const port = process.env.PORT || '4000'
-
-;(async () => {
+(async () => {
     const UPLOAD_DIR = './uploads'
     await mkdir(UPLOAD_DIR, { recursive: true })
 })()
@@ -20,30 +20,9 @@ const app = new Elysia({
         maxRequestBodySize: 1024 * 1024 * 256, // 256MB
     },
 })
-    .use(staticPlugin({
-        // 静态文件目录（相对于项目根目录）
-        assets: 'public', // 默认: 'public'
-        // 访问路径前缀
-        prefix: '/public', // 默认: '/public'
-        // 是否在找不到路由时返回 index.html（适用于 SPA）
-        indexHTML: false, // 默认: false
-        // 自定义响应头
-        headers: {
-            'Cache-Control': `public, max-age=${3600 * 24 * 30}`, // 30 days
-        },
-    }))
-    .use(staticPlugin({
-        // 静态文件目录（相对于项目根目录）
-        assets: 'uploads', // 默认: 'public'
-        // 访问路径前缀
-        prefix: '/uploads', // 默认: '/public'
-        // 是否在找不到路由时返回 index.html（适用于 SPA）
-        indexHTML: false, // 默认: false
-        // 自定义响应头
-        headers: {
-            'Cache-Control': `public, max-age=${3600 * 24 * 30}`, // 30 days
-        },
-    }))
+    .use(createStaticConfig())
+    .use(createSwaggerConfig())
+    .use(accessLoggerMiddleware)
     .use(frontendRouter)
     .use(backendRouter)
     .use(uploadRouter)
@@ -55,8 +34,8 @@ const app = new Elysia({
             data: null,
         }
     })
-    .listen(port)
+    .listen(config.server.port)
 
-console.log(
-    `🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}`,
-)
+// 获取正确的访问信息
+logger.info(`🚀 服务器运行在 http://${app.server?.hostname}:${app.server?.port}`)
+logger.info(`📋 API文档地址: http://${app.server?.hostname}:${app.server?.port}${config.swagger.path}`)
