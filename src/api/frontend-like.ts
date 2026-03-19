@@ -21,9 +21,7 @@ export async function like(reqQuery: { id: string }, user_id?: string) {
             _id: article_id,
             is_delete: 0,
         }
-        const result = await ArticleM.findOne(filter)
-            .exec()
-            .then(data => data?.toObject())
+        const result = await ArticleM.findOne(filter).lean()
         if (result && (!result.likes || result.likes.findIndex(item => item === user_id) === -1)) {
             const search = {
                 _id: article_id,

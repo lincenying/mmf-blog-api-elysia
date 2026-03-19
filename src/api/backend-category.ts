@@ -1,4 +1,5 @@
-import type { Category, CategoryInsert, CategoryModify, ResData } from '~/types'
+import type { ResData } from '~/types'
+import type { Category, CategoryInsert, CategoryModify } from '~/types/catagory'
 
 import CategoryM from '../models/category'
 import { getErrorMessage, getNowTime } from '../utils'
@@ -10,10 +11,7 @@ export async function getList() {
     let json: ResData<Nullable<{ list: Category[] }>>
 
     try {
-        const result = await CategoryM.find()
-            .sort('-cate_order')
-            .exec()
-            .then(data => data.map(item => item.toObject()))
+        const result = await CategoryM.find().sort('-cate_order').lean()
         json = {
             code: 200,
             data: {
@@ -42,7 +40,7 @@ export async function getItem(reqQuery: { id: string }) {
 
     try {
         const filter = { _id }
-        const result = await CategoryM.findOne(filter).exec().then(data => data?.toObject())
+        const result = await CategoryM.findOne(filter).lean()
         json = { code: 200, data: result }
     }
     catch (err: unknown) {
@@ -142,9 +140,7 @@ export async function modify(reqBody: CategoryModify) {
             cate_order,
             update_date: getNowTime(),
         }
-        const result = await CategoryM.findOneAndUpdate(filter, body, { new: true })
-            .exec()
-            .then(data => data?.toObject())
+        const result = await CategoryM.findOneAndUpdate(filter, body, { new: true }).lean()
         json = { code: 200, message: '更新成功', data: result }
     }
     catch (err: unknown) {

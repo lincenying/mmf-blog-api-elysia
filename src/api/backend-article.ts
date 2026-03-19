@@ -1,8 +1,8 @@
-import type { Article, ArticleInsert, ArticleModify, Lists, ResData } from '~/types'
+import type { Lists, ResData } from '~/types'
+import type { Article, ArticleInsert, ArticleModify } from '~/types/article'
 
 import hljs from 'highlight.js'
 import markdownIt from 'markdown-it'
-
 import ArticleM from '../models/article'
 import CategoryM from '../models/category'
 import { getErrorMessage, getNowTime } from '../utils'
@@ -78,8 +78,7 @@ export async function getList(reqQuery: { page: string, limit: string, sort: str
                 .sort(sort)
                 .skip(skip)
                 .limit(limit)
-                .exec()
-                .then(data => data.map(item => item.toObject())),
+                .lean(),
             ArticleM.countDocuments(payload),
         ])
         const totalPage = Math.ceil(total / limit)
@@ -122,7 +121,7 @@ export async function getItem(reqQuery: { id: string }) {
             // 构建查询过滤条件
             const filter = { _id }
             // 尝试从数据库中查找文章
-            const result = await ArticleM.findOne(filter).exec().then(data => data?.toObject())
+            const result = await ArticleM.findOne(filter).lean()
             // 查询成功，返回文章详情
             json = { code: 200, message: 'success', data: result }
         }

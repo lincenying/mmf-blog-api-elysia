@@ -1,10 +1,11 @@
-import type { Lists, ResData, User, UserCookies, UserModify } from '~/types'
+import type { Lists, ResData } from '~/types'
+import type { User, UserCookies, UserModify } from '~/types/user'
 
 import { strLen } from '@lincy/utils'
 import jwt from 'jsonwebtoken'
 import md5 from 'md5'
 
-import { md5Pre, secretClient as secret } from '../config'
+import { config, secretClient as secret } from '../config'
 import UserM from '../models/user'
 import { getErrorMessage, getNowTime } from '../utils'
 
@@ -25,8 +26,7 @@ export async function getList(reqQuery: { page?: number, limit?: number }) {
                 .sort(sort)
                 .skip(skip)
                 .limit(limit)
-                .exec()
-                .then(data => data.map(item => item.toObject())),
+                .lean(),
             UserM.countDocuments(),
         ])
         const totalPage = Math.ceil(total / limit)
@@ -64,12 +64,11 @@ export async function login(reqBody: { username: string, password: string }) {
     try {
         const filter = {
             username,
-            password: md5(md5Pre + password),
+            password: md5(config.md5_salt + password),
             is_delete: 0,
         }
-        const result = await UserM.findOne(filter)
-            .exec()
-            .then(data => data?.toObject())
+        const result = await UserM.findOne(filter).lean()
+
         if (result) {
             username = encodeURI(username)
             const { id, email: useremail } = result
@@ -125,16 +124,14 @@ export async function insert(reqBody: { email: string, password: string, usernam
     }
     else {
         try {
-            const result = await UserM.findOne({ username })
-                .exec()
-                .then(data => data?.toObject())
+            const result = await UserM.findOne({ username }).lean()
             if (result) {
                 json = { code: -200, message: '该用户名已经存在!', data: 'error' }
             }
             else {
                 await UserM.create({
                     username,
-                    password: md5(md5Pre + password),
+                    password: md5(config.md5_salt + password),
                     email,
                     creat_date: getNowTime(),
                     update_date: getNowTime(),
@@ -160,9 +157,7 @@ export async function getItem(userid: string) {
 
     try {
         const filter = { _id: userid, is_delete: 0 }
-        const result = await UserM.findOne(filter)
-            .exec()
-            .then(data => data?.toObject())
+        const result = await UserM.findOne(filter).lean()
         if (result) {
             json = { code: 200, data: result, message: 'success' }
         }
@@ -191,14 +186,12 @@ export async function modify(reqBody: { id: string, email: string, password: str
         update_date: getNowTime(),
     }
     if (password) {
-        body.password = md5(md5Pre + password)
+        body.password = md5(config.md5_salt + password)
     }
 
     try {
         const filter = { _id: id }
-        const result = await UserM.findOneAndUpdate(filter, body, { new: true })
-            .exec()
-            .then(data => data?.toObject())
+        const result = await UserM.findOneAndUpdate(filter, body, { new: true }).lean()
         json = { code: 200, message: '更新成功', data: result }
     }
     catch (err: unknown) {
@@ -246,20 +239,18 @@ export async function password(reqBody: { old_password: string, password: string
     try {
         const filter = {
             _id: user_id,
-            password: md5(md5Pre + old_password),
+            password: md5(config.md5_salt + old_password),
             is_delete: 0,
         }
 
-        const result = await UserM.findOne(filter)
-            .exec()
-            .then(data => data?.toObject())
+        const result = await UserM.findOne(filter).lean()
         if (result) {
             const filter = {
                 _id: user_id,
             }
             const body = {
                 $set: {
-                    password: md5(md5Pre + password),
+                    password: md5(config.md5_salt + password),
                 },
             }
             await UserM.updateOne(filter, body)

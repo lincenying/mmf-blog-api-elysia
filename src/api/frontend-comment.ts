@@ -1,4 +1,5 @@
-import type { Comment, Lists, ReqListQuery, ResData } from '~/types'
+import type { Lists, ReqListQuery, ResData } from '~/types'
+import type { Comment } from '~/types/comment'
 
 import ArticleM from '../models/article'
 import CommentM from '../models/comment'
@@ -81,7 +82,7 @@ export async function getList(reqQuery: ReqListQuery) {
 
         try {
             const [list, total] = await Promise.all([
-                CommentM.find(data).sort('-_id').skip(skip).limit(limit).exec().then(data => data.map(item => item.toObject())),
+                CommentM.find(data).sort('-_id').skip(skip).limit(limit).lean(),
                 CommentM.countDocuments(data),
             ])
             const totalPage = Math.ceil(total / limit)

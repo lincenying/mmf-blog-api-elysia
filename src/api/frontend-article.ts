@@ -1,4 +1,5 @@
-import type { Article, Lists, ReqListQuery, ResData, TrendingData } from '~/types'
+import type { Lists, ReqListQuery, ResData } from '~/types'
+import type { Article, TrendingData } from '~/types/article'
 
 import ArticleM from '../models/article'
 import { getErrorMessage } from '../utils'

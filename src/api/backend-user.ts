@@ -1,10 +1,11 @@
-import type { Lists, ResData, User, UserModify } from '~/types'
+import type { Lists, ResData } from '~/types'
+import type { User, UserModify } from '~/types/user'
 
 import fs from 'node:fs'
 import jwt from 'jsonwebtoken'
 import md5 from 'md5'
 
-import { md5Pre, secretServer as secret } from '../config'
+import { config, secretServer as secret } from '../config'
 import AdminM from '../models/admin'
 import { fsExistsSync, getErrorMessage, getNowTime } from '../utils'
 
@@ -24,8 +25,7 @@ export async function getList(reqQuery: { page?: number, limit?: number }) {
                 .sort(sort)
                 .skip(skip)
                 .limit(limit)
-                .exec()
-                .then(data => data.map(item => item.toObject())),
+                .lean(),
             AdminM.countDocuments(),
         ])
         const totalPage = Math.ceil(total / limit)
@@ -60,9 +60,7 @@ export async function getItem(reqQuery: { id: string }) {
     else {
         try {
             const filter = { _id }
-            const result = await AdminM.findOne(filter)
-                .exec()
-                .then(data => data?.toObject())
+            const result = await AdminM.findOne(filter).lean()
             json = { code: 200, data: result, message: 'success' }
         }
         catch (err: unknown) {
@@ -88,12 +86,10 @@ export async function login(reqBody: { password: string, username: string }) {
         try {
             const filter = {
                 username,
-                password: md5(md5Pre + password),
+                password: md5(config.md5_salt + password),
                 is_delete: 0,
             }
-            const result = await AdminM.findOne(filter)
-                .exec()
-                .then(data => data?.toObject())
+            const result = await AdminM.findOne(filter).lean()
             if (result) {
                 const _username = encodeURI(username)
                 const id = result.id || ''
@@ -145,14 +141,14 @@ export async function insert(email: string, password: string, username: string) 
     else {
         try {
             const filter = { username }
-            const result = await AdminM.findOne(filter).exec().then(data => data?.toObject())
+            const result = await AdminM.findOne(filter).lean()
             if (result) {
                 message = `${username}: 已经存在`
             }
             else {
                 const body = {
                     username,
-                    password: md5(md5Pre + password),
+                    password: md5(config.md5_salt + password),
                     email,
                     creat_date: getNowTime(),
                     update_date: getNowTime(),
@@ -185,14 +181,12 @@ export async function modify(reqBody: { id: string, email: string, password: str
         update_date: getNowTime(),
     }
     if (password) {
-        body.password = md5(md5Pre + password)
+        body.password = md5(config.md5_salt + password)
     }
 
     try {
         const filter = { _id }
-        const result = await AdminM.findOneAndUpdate(filter, body, { new: true })
-            .exec()
-            .then(data => data?.toObject())
+        const result = await AdminM.findOneAndUpdate(filter, body, { new: true }).lean()
         json = { code: 200, message: '更新成功', data: result }
     }
     catch (err: unknown) {
