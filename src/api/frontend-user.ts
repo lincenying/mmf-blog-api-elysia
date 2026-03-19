@@ -1,9 +1,9 @@
-import type { Lists, ResData } from '~/types'
-import type { User, UserCookies, UserModify } from '~/types/user'
-
+import type { UserModify } from '~/types/user'
 import { strLen } from '@lincy/utils'
+
 import jwt from 'jsonwebtoken'
 import md5 from 'md5'
+import { ApiError } from '~/types'
 
 import { config, secretClient as secret } from '../config'
 import UserM from '../models/user'
@@ -13,8 +13,6 @@ import { getErrorMessage, getNowTime } from '../utils'
  * 用户列表
  */
 export async function getList(reqQuery: { page?: number, limit?: number }) {
-    let json: ResData<Nullable<Lists<User[]>>>
-
     const sort = '-_id'
     const page = Number(reqQuery.page) || 1
     const limit = Number(reqQuery.limit) || 10
@@ -30,35 +28,28 @@ export async function getList(reqQuery: { page?: number, limit?: number }) {
             UserM.countDocuments(),
         ])
         const totalPage = Math.ceil(total / limit)
-        json = {
-            code: 200,
-            data: {
-                list,
-                total,
-                hasNext: totalPage > page ? 1 : 0,
-                hasPrev: page > 1 ? 1 : 0,
-            },
+        return {
+            list,
+            total,
+            hasNext: totalPage > page ? 1 : 0,
+            hasPrev: page > 1 ? 1 : 0,
         }
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 用户登录
  */
 export async function login(reqBody: { username: string, password: string }) {
-    let json: ResData<Nullable<UserCookies>>
-
     let { username } = reqBody
 
     const { password } = reqBody
 
     if (username === '' || password === '') {
-        json = { code: -200, data: null, message: '请输入用户名和密码' }
+        throw new ApiError(201, '请输入用户名和密码')
     }
 
     try {
@@ -74,59 +65,49 @@ export async function login(reqBody: { username: string, password: string }) {
             const { id, email: useremail } = result
 
             const token = jwt.sign({ id, username }, secret, { expiresIn: 60 * 60 * 24 * 30 })
-            json = {
-                code: 200,
-                message: '登录成功',
-                data: {
-                    user: token,
-                    userid: id,
-                    username,
-                    useremail,
-                },
+            return {
+                user: token,
+                userid: id,
+                username,
+                useremail,
             }
         }
         else {
-            json = { code: -200, data: null, message: '用户名或者密码错误' }
+            throw new ApiError(201, '用户名或者密码错误')
         }
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 用户退出
  */
 export function logout() {
-    const json: ResData<string> = { code: 200, message: '退出成功', data: 'success' }
-
-    return json
+    return '退出成功'
 }
 
 /**
  * 用户注册
  */
 export async function insert(reqBody: { email: string, password: string, username: string }) {
-    let json: ResData<string | null>
-
     const { email, password, username } = reqBody
 
     if (!username || !password || !email) {
-        json = { code: -200, data: null, message: '请将表单填写完整' }
+        throw new ApiError(201, '请将表单填写完整')
     }
     else if (strLen(username) < 4) {
-        json = { code: -200, data: null, message: '用户长度至少 2 个中文或 4 个英文' }
+        throw new ApiError(201, '用户长度至少 2 个中文或 4 个英文')
     }
     else if (strLen(password) < 8) {
-        json = { code: -200, data: null, message: '密码长度至少 8 位' }
+        throw new ApiError(201, '密码长度至少 8 位')
     }
     else {
         try {
             const result = await UserM.findOne({ username }).lean()
             if (result) {
-                json = { code: -200, message: '该用户名已经存在!', data: 'error' }
+                throw new ApiError(201, '该用户名已经存在')
             }
             else {
                 await UserM.create({
@@ -138,46 +119,36 @@ export async function insert(reqBody: { email: string, password: string, usernam
                     is_delete: 0,
                     timestamp: getNowTime('X'),
                 })
-                json = { code: 200, message: '注册成功!', data: 'success' }
+                return '注册成功!'
             }
         }
         catch (err: unknown) {
-            json = { code: -200, data: null, message: getErrorMessage(err) }
+            throw new ApiError(-200, getErrorMessage(err))
         }
     }
-
-    return json
 }
 
 /**
  * 获取用户信息
  */
 export async function getItem(userid: string) {
-    let json: ResData<Nullable<User>>
-
     try {
         const filter = { _id: userid, is_delete: 0 }
         const result = await UserM.findOne(filter).lean()
         if (result) {
-            json = { code: 200, data: result, message: 'success' }
+            return result
         }
-        else {
-            json = { code: -200, data: null, message: '请先登录, 或者数据错误' }
-        }
+        return '请先登录, 或者数据错误'
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 用户编辑
  */
 export async function modify(reqBody: { id: string, email: string, password: string, username: string }) {
-    let json: ResData<Nullable<User>>
-
     const { id, email, password, username } = reqBody
 
     const body: UserModify = {
@@ -192,46 +163,38 @@ export async function modify(reqBody: { id: string, email: string, password: str
     try {
         const filter = { _id: id }
         const result = await UserM.findOneAndUpdate(filter, body, { new: true }).lean()
-        json = { code: 200, message: '更新成功', data: result }
+        return result
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 账号编辑
  */
 export async function account(reqBody: { email: string }, user_id?: string) {
-    let json: ResData<{ email: string } | null>
-
     if (!user_id) {
-        return { code: -200, data: null, message: '请先登录' }
+        throw new ApiError(201, '请先登录')
     }
 
     const { email } = reqBody
 
     try {
         await UserM.updateOne({ _id: user_id }, { $set: { email } }).exec()
-        json = { code: 200, message: '更新成功', data: { email } }
+        return { email }
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 密码编辑
  */
 export async function password(reqBody: { old_password: string, password: string }, user_id?: string) {
-    let json: ResData<string | null>
-
     if (!user_id) {
-        return { code: -200, data: null, message: '请先登录' }
+        throw new ApiError(201, '请先登录')
     }
 
     const { old_password, password } = reqBody
@@ -254,25 +217,21 @@ export async function password(reqBody: { old_password: string, password: string
                 },
             }
             await UserM.updateOne(filter, body)
-            json = { code: 200, message: '更新成功', data: 'success' }
+            return 'success'
         }
         else {
-            json = { code: -200, message: '原始密码错误', data: 'error' }
+            throw new ApiError(201, '原始密码错误')
         }
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 用户删除
  */
 export async function deletes(reqQuery: { id: string }) {
-    let json: ResData<string | null>
-
     const { id: _id } = reqQuery
 
     try {
@@ -281,21 +240,17 @@ export async function deletes(reqQuery: { id: string }) {
             is_delete: 1,
         }
         await UserM.updateOne(filter, body).exec()
-        json = { code: 200, message: '更新成功', data: 'success' }
+        return '删除功能'
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 用户恢复
  */
 export async function recover(reqQuery: { id: string }) {
-    let json: ResData<string | null>
-
     const { id: _id } = reqQuery
 
     try {
@@ -304,11 +259,9 @@ export async function recover(reqQuery: { id: string }) {
             is_delete: 0,
         }
         await UserM.updateOne(filter, body).exec()
-        json = { code: 200, message: '更新成功', data: 'success' }
+        return '恢复成功'
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }

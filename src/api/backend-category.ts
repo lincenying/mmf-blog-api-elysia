@@ -1,6 +1,7 @@
-import type { ResData } from '~/types'
-import type { Category, CategoryInsert, CategoryModify } from '~/types/catagory'
+import type { CategoryInsert, CategoryModify } from '~/types/catagory'
+import mongoose from '~/mongoose'
 
+import { ApiError } from '~/types'
 import CategoryM from '../models/category'
 import { getErrorMessage, getNowTime } from '../utils'
 
@@ -8,58 +9,45 @@ import { getErrorMessage, getNowTime } from '../utils'
  * 管理时, 获取分类列表
  */
 export async function getList() {
-    let json: ResData<Nullable<{ list: Category[] }>>
-
     try {
         const result = await CategoryM.find().sort('-cate_order').lean()
-        json = {
-            code: 200,
-            data: {
-                list: result,
-            },
+        return {
+            list: result,
         }
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 管理时, 获取分类详情
  */
 export async function getItem(reqQuery: { id: string }) {
-    let json: ResData<Nullable<Category>>
-
     const { id: _id } = reqQuery
 
-    if (!_id) {
-        json = { code: -200, data: null, message: '参数错误' }
+    if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+        throw new ApiError(201, '参数错误')
     }
 
     try {
         const filter = { _id }
         const result = await CategoryM.findOne(filter).lean()
-        json = { code: 200, data: result }
+        return result
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 管理时, 新增分类
  */
 export async function insert(reqBody: CategoryInsert) {
-    let json: ResData<Nullable<Category>>
-
     const { cate_name, cate_order } = reqBody
 
     if (!cate_name || !cate_order) {
-        json = { code: -200, data: null, message: '请填写分类名称和排序' }
+        throw new ApiError(201, '请填写分类名称和排序')
     }
     else {
         try {
@@ -73,64 +61,52 @@ export async function insert(reqBody: CategoryInsert) {
                 timestamp: Number(getNowTime('X')),
             }
             const result = await CategoryM.create(creatData).then(data => data.toObject())
-            json = { code: 200, message: '添加成功', data: result }
+            return result
         }
         catch (err: unknown) {
-            json = { code: -200, data: null, message: getErrorMessage(err) }
+            throw new ApiError(-200, getErrorMessage(err))
         }
     }
-
-    return json
 }
 
 /**
  * 管理时, 删除分类
  */
 export async function deletes(reqQuery: { id: string }) {
-    let json: ResData<Nullable<string>>
-
     const { id: _id } = reqQuery
 
     try {
         const filter = { _id }
         const body = { is_delete: 1 }
         await CategoryM.updateOne(filter, body).exec()
-        json = { code: 200, message: '更新成功', data: 'success' }
+        return '删除成功'
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 管理时, 恢复分类
  */
 export async function recover(reqQuery: { id: string }) {
-    let json: ResData<Nullable<string>>
-
     const { id: _id } = reqQuery
 
     try {
         const filter = { _id }
         const body = { is_delete: 0 }
         await CategoryM.updateOne(filter, body).exec()
-        json = { code: 200, message: '更新成功', data: 'success' }
+        return '恢复成功'
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 管理时, 编辑分类
  */
 export async function modify(reqBody: CategoryModify) {
-    let json: ResData<Nullable<Category>>
-
     const { id: _id, cate_name, cate_order } = reqBody
 
     try {
@@ -141,11 +117,9 @@ export async function modify(reqBody: CategoryModify) {
             update_date: getNowTime(),
         }
         const result = await CategoryM.findOneAndUpdate(filter, body, { new: true }).lean()
-        json = { code: 200, message: '更新成功', data: result }
+        return result
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }

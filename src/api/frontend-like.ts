@@ -1,4 +1,4 @@
-import type { ResData } from '~/types'
+import { ApiError } from '~/types'
 
 import ArticleM from '../models/article'
 import { getErrorMessage } from '../utils'
@@ -7,11 +7,8 @@ import { getErrorMessage } from '../utils'
  * 文章点赞
  */
 export async function like(reqQuery: { id: string }, user_id?: string) {
-    let json: ResData<string | null>
-
     if (!user_id) {
-        json = { code: -200, data: null, message: '请先登录' }
-        return json
+        throw new ApiError(201, '请先登录')
     }
 
     const { id: article_id } = reqQuery
@@ -36,24 +33,19 @@ export async function like(reqQuery: { id: string }, user_id?: string) {
             }
             await ArticleM.updateOne(search, body).exec()
         }
-        json = { code: 200, message: '操作成功', data: 'success' }
+        return '操作成功'
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 取消文章点赞
  */
 export async function unlike(reqQuery: { id: string }, user_id?: string) {
-    let json: ResData<string | null>
-
     if (!user_id) {
-        json = { code: -200, data: null, message: '请先登录' }
-        return json
+        throw new ApiError(201, '请先登录')
     }
 
     const { id: article_id } = reqQuery
@@ -71,21 +63,17 @@ export async function unlike(reqQuery: { id: string }, user_id?: string) {
             },
         }
         await ArticleM.updateOne(filter, body).exec()
-        json = { code: 200, message: '操作成功', data: 'success' }
+        return '操作成功'
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 重置文章点赞数量
  */
 export async function resetLike() {
-    let json: ResData<string | null>
-
     try {
         const result = await ArticleM.find().exec()
         const length = result.length
@@ -95,11 +83,9 @@ export async function resetLike() {
             const body = { like: item.likes?.length }
             await ArticleM.findOneAndUpdate(filter, body, { new: true }).exec()
         }
-        json = { code: 200, message: '操作成功', data: 'success' }
+        return '操作成功'
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }

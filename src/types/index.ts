@@ -1,6 +1,6 @@
 export type ApiResponse<T = unknown>
-    = | { code: number, success: true, data: T }
-        | { code: number, success: false, error: string }
+    = | { code: number, success: true, data: T, message?: string }
+        | { code: number, success: false, message: string }
 
 /**
  * API 错误类

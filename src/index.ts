@@ -4,11 +4,13 @@ import { Elysia } from 'elysia'
 import { config } from '@/config'
 import { logger } from '@/utils/logger'
 import { accessLoggerMiddleware } from './middleware/access-logger'
+import { responseWrapperMiddleware } from './middleware/response-wrapper'
 import { createStaticConfig, createSwaggerConfig } from './plugins'
 import { adminRouter } from './routes/admin'
 import { backendRouter } from './routes/backend'
 import { frontendRouter } from './routes/frontend'
 import { uploadRouter } from './routes/upload'
+import { ApiError } from './types'
 
 (async () => {
     const UPLOAD_DIR = './uploads'
@@ -23,16 +25,16 @@ const app = new Elysia({
     .use(createStaticConfig())
     .use(createSwaggerConfig())
     .use(accessLoggerMiddleware)
+    .use(responseWrapperMiddleware)
     .use(frontendRouter)
     .use(backendRouter)
     .use(uploadRouter)
     .use(adminRouter)
+    .all('/sm/*', () => {
+        return ''
+    })
     .all('/*', () => {
-        return {
-            code: 404,
-            message: 'Not Found',
-            data: null,
-        }
+        throw new ApiError(404, 'Not Found')
     })
     .listen(config.server.port)
 

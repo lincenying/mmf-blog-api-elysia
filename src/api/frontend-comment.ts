@@ -1,6 +1,7 @@
-import type { Lists, ReqListQuery, ResData } from '~/types'
 import type { Comment } from '~/types/comment'
+import mongoose from '~/mongoose'
 
+import { ApiError, type ReqListQuery } from '~/types'
 import ArticleM from '../models/article'
 import CommentM from '../models/comment'
 import { getErrorMessage, getNowTime } from '../utils'
@@ -9,20 +10,18 @@ import { getErrorMessage, getNowTime } from '../utils'
  * 发布评论
  */
 export async function insert(reqBody: { id: string, content: string }, userid?: string) {
-    let json: ResData<Comment | null>
-
     const { id: _id, content } = reqBody
 
     const creat_date = getNowTime()
     const timestamp = getNowTime('X')
-    if (!_id) {
-        json = { code: -200, data: null, message: '参数错误' }
+    if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+        throw new ApiError(201, '参数错误')
     }
     else if (!content) {
-        json = { code: -200, data: null, message: '请输入评论内容' }
+        throw new ApiError(201, '请输入评论内容')
     }
     else if (!userid) {
-        json = { code: -200, data: null, message: '请先登录' }
+        throw new ApiError(201, '请先登录')
     }
     else {
         const data: Comment = {
@@ -42,28 +41,24 @@ export async function insert(reqBody: { id: string, content: string }, userid?: 
                 },
             }
             await ArticleM.updateOne(filter, body).exec()
-            json = { code: 200, data: result, message: '发布成功' }
+            return result
         }
         catch (err: unknown) {
-            json = { code: -200, data: null, message: getErrorMessage(err) }
+            throw new ApiError(-200, getErrorMessage(err))
         }
     }
-
-    return json
 }
 
 /**
  * 前台浏览时, 读取评论列表
  */
 export async function getList(reqQuery: ReqListQuery) {
-    let json: ResData<Nullable<Lists<Comment[]>>>
-
     const { all, id: article_id } = reqQuery
 
     let { limit, page } = reqQuery
 
-    if (!article_id) {
-        json = { code: -200, data: null, message: '参数错误' }
+    if (!article_id || !mongoose.Types.ObjectId.isValid(article_id)) {
+        throw new ApiError(201, '参数错误')
     }
     else {
         page = Number(page) || 1
@@ -86,30 +81,23 @@ export async function getList(reqQuery: ReqListQuery) {
                 CommentM.countDocuments(data),
             ])
             const totalPage = Math.ceil(total / limit)
-            json = {
-                code: 200,
-                data: {
-                    list,
-                    total,
-                    hasNext: totalPage > page ? 1 : 0,
-                    hasPrev: page > 1 ? 1 : 0,
-                },
+            return {
+                list,
+                total,
+                hasNext: totalPage > page ? 1 : 0,
+                hasPrev: page > 1 ? 1 : 0,
             }
         }
         catch (err: unknown) {
-            json = { code: -200, data: null, message: getErrorMessage(err) }
+            throw new ApiError(-200, getErrorMessage(err))
         }
     }
-
-    return json
 }
 
 /**
  * 评论删除
  */
 export async function deletes(reqQuery: { id: string }) {
-    let json: ResData<string | null>
-
     const { id: _id } = reqQuery
 
     try {
@@ -120,21 +108,17 @@ export async function deletes(reqQuery: { id: string }) {
             CommentM.updateOne(filter, commentBody).exec(),
             ArticleM.updateOne(filter, ArticleBody).exec(),
         ])
-        json = { code: 200, message: '删除成功', data: 'success' }
+        return '删除成功'
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 评论恢复
  */
 export async function recover(reqQuery: { id: string }) {
-    let json: ResData<string | null>
-
     const { id: _id } = reqQuery
 
     try {
@@ -145,11 +129,9 @@ export async function recover(reqQuery: { id: string }) {
             CommentM.updateOne(filter, commentBody).exec(),
             ArticleM.updateOne(filter, ArticleBody).exec(),
         ])
-        json = { code: 200, message: '恢复成功', data: 'success' }
+        return '恢复成功'
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }

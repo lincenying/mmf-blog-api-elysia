@@ -1,8 +1,9 @@
-import type { Lists, ResData } from '~/types'
 import type { Article, ArticleInsert, ArticleModify } from '~/types/article'
-
 import hljs from 'highlight.js'
+
 import markdownIt from 'markdown-it'
+import mongoose from '~/mongoose'
+import { ApiError } from '~/types'
 import ArticleM from '../models/article'
 import CategoryM from '../models/category'
 import { getErrorMessage, getNowTime } from '../utils'
@@ -55,8 +56,6 @@ function marked(content: string) {
  * 获取文章列表的异步函数。
  */
 export async function getList(reqQuery: { page: string, limit: string, sort: string, key: string }) {
-    let json: ResData<Nullable<Lists<Article[]>>>
-
     // 处理查询参数，设定默认值
     const sort = reqQuery.sort || '-update_date'
     const page = Number(reqQuery.page) || 1
@@ -83,38 +82,29 @@ export async function getList(reqQuery: { page: string, limit: string, sort: str
         ])
         const totalPage = Math.ceil(total / limit)
         // 构建响应数据对象
-        json = {
-            code: 200,
-            data: {
-                list,
-                total,
-                hasNext: totalPage > page ? 1 : 0,
-                hasPrev: page > 1 ? 1 : 0,
-            },
-            message: 'success',
+        return {
+            list,
+            total,
+            hasNext: totalPage > page ? 1 : 0,
+            hasPrev: page > 1 ? 1 : 0,
         }
     }
     catch (err: unknown) {
         // 捕获异常，返回错误信息
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 获取指定ID的文章项。
  */
 export async function getItem(reqQuery: { id: string }) {
-    let json: ResData<Nullable<Article>>
-
     // 从请求中提取文章ID
     const { id: _id } = reqQuery
 
     // 检查ID是否提供
-    if (!_id) {
-        // 如果没有提供ID，返回错误信息
-        json = { code: -200, data: null, message: '参数错误' }
+    if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+        throw new ApiError(201, '参数错误')
     }
     else {
         try {
@@ -123,24 +113,19 @@ export async function getItem(reqQuery: { id: string }) {
             // 尝试从数据库中查找文章
             const result = await ArticleM.findOne(filter).lean()
             // 查询成功，返回文章详情
-            json = { code: 200, message: 'success', data: result }
+            return result
         }
         catch (err: unknown) {
             // 查询失败，返回错误信息
-            json = { code: -200, data: null, message: getErrorMessage(err) }
+            throw new ApiError(-200, getErrorMessage(err))
         }
     }
-
-    // 使用响应对象返回处理结果
-    return json
 }
 
 /**
  * 异步插入文章。
  */
 export async function insert(reqBody: ArticleInsert) {
-    let json: ResData<Nullable<Article>>
-
     // 从请求体中解构文章信息
     const { category, content, title, html } = reqBody
 
@@ -186,24 +171,24 @@ export async function insert(reqBody: ArticleInsert) {
         }
         await CategoryM.updateOne(filter, body).exec()
         // 返回成功响应
-        json = { code: 200, message: '发布成功', data: result }
+        return result
     }
     catch (err: unknown) {
         // 捕获错误，返回错误响应
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 删除文章记录及其对应分类的数量减一。
  */
 export async function deletes(reqQuery: { id: string }) {
-    let json: ResData<Nullable<Article>>
-
     // 从请求中提取文章ID
     const { id: _id } = reqQuery
+
+    if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+        throw new ApiError(201, '参数错误')
+    }
 
     try {
         // 准备过滤条件和更新内容
@@ -220,25 +205,24 @@ export async function deletes(reqQuery: { id: string }) {
         }
         await CategoryM.updateOne(filter, categoryBody).exec()
         // 准备并返回成功响应
-        json = { code: 200, message: '更新成功', data: result }
+        return result
     }
     catch (err: unknown) {
         // 捕获并处理错误，返回错误响应
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    // 使用响应对象返回处理结果
-    return json
 }
 
 /**
  * 恢复文章功能的异步函数。
  */
 export async function recover(reqQuery: { id: string }) {
-    let json: ResData<Nullable<Article>>
-
     // 从请求中提取文章ID
     const { id: _id } = reqQuery
+
+    if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+        throw new ApiError(201, '参数错误')
+    }
 
     try {
         // 构建用于查找和更新的过滤条件和更新内容
@@ -257,23 +241,18 @@ export async function recover(reqQuery: { id: string }) {
         await CategoryM.updateOne(filter, categoryBody).exec()
 
         // 构建并返回成功的响应数据
-        json = { code: 200, message: '更新成功', data: result }
+        return result
     }
     catch (err: unknown) {
         // 捕获并处理错误，构建并返回失败的响应数据
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    // 将响应数据发送回客户端
-    return json
 }
 
 /**
  * 修改文章信息
  */
 export async function modify(reqBody: ArticleModify) {
-    let json: ResData<Nullable<Article>>
-
     // 从请求体中解构需要的字段
     const { id: _id, category, category_old, content, title, html, category_name } = reqBody
 
@@ -317,12 +296,10 @@ export async function modify(reqBody: ArticleModify) {
             ])
         }
         // 返回成功响应
-        json = { code: 200, message: '更新成功', data: result }
+        return result
     }
     catch (err: unknown) {
         // 返回错误响应
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }

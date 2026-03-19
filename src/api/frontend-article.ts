@@ -1,6 +1,7 @@
-import type { Lists, ReqListQuery, ResData } from '~/types'
 import type { Article, TrendingData } from '~/types/article'
+import mongoose from '~/mongoose'
 
+import { ApiError, type ReqListQuery } from '~/types'
 import ArticleM from '../models/article'
 import { getErrorMessage } from '../utils'
 
@@ -35,8 +36,6 @@ function removeFields(fields: string, filter: string) {
  * 前台浏览时, 获取文章列表
  */
 export async function getList(reqQuery: ReqListQuery, user_id?: string) {
-    let json: ResData<Nullable<Lists<Article[]>>>
-
     const { by, id, key, filter } = reqQuery
 
     const page = Number(reqQuery.page) || 1
@@ -74,19 +73,10 @@ export async function getList(reqQuery: ReqListQuery, user_id?: string) {
             ArticleM.countDocuments(payload),
         ])
         const totalPage = Math.ceil(total / limit)
-        json = {
-            code: 200,
-            data: {
-                list: [],
-                total,
-                hasNext: totalPage > page ? 1 : 0,
-                hasPrev: page > 1 ? 1 : 0,
-            },
-            message: 'success',
-        }
+        let tmpList: Article[] = []
         if (user_id) {
-            json.data!.list = list.map(
-                (item): Article => ({
+            tmpList = list.map(
+                item => ({
                     ...item,
                     like_status: item.likes && item.likes.includes(user_id),
                     content: `${replaceHtmlTag(item.content).substring(0, 500)}...`,
@@ -95,8 +85,8 @@ export async function getList(reqQuery: ReqListQuery, user_id?: string) {
             )
         }
         else {
-            json.data!.list = list.map(
-                (item): Article => ({
+            tmpList = list.map(
+                item => ({
                     ...item,
                     like_status: false,
                     content: `${replaceHtmlTag(item.content).substring(0, 500)}...`,
@@ -104,24 +94,27 @@ export async function getList(reqQuery: ReqListQuery, user_id?: string) {
                 }),
             )
         }
+        return {
+            list: tmpList,
+            total,
+            hasNext: totalPage > page ? 1 : 0,
+            hasPrev: page > 1 ? 1 : 0,
+
+        }
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 前台浏览时, 获取单篇文章
  */
 export async function getItem(reqQuery: { id: string }, user_id: Nullable<string>) {
-    let json: ResData<Nullable<Article>>
-
     const { id: _id } = reqQuery
 
-    if (!_id) {
-        json = { code: -200, data: null, message: '参数错误' }
+    if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
+        throw new ApiError(201, '参数错误')
     }
 
     try {
@@ -132,11 +125,7 @@ export async function getItem(reqQuery: { id: string }, user_id: Nullable<string
             ArticleM.updateOne(filter, body).exec(),
         ])
         if (!result) {
-            json = {
-                code: -200,
-                data: null,
-                message: '没有找到该文章',
-            }
+            throw new ApiError(201, '没有找到该文章')
         }
         else {
             if (user_id) {
@@ -148,26 +137,18 @@ export async function getItem(reqQuery: { id: string }, user_id: Nullable<string
             result.likes = []
             result.content = replaceHtmlTag(result.content)
             result.html = replaceHtmlTag(result.html)
-            json = {
-                code: 200,
-                data: result,
-                message: 'success',
-            }
+            return result
         }
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
 
 /**
  * 前台浏览时, 获取文章推荐列表
  */
 export async function getTrending(reqQuery: { id: string }) {
-    let json: ResData<Nullable<{ list: Article[] }>>
-
     const id = reqQuery.id
 
     try {
@@ -187,17 +168,12 @@ export async function getTrending(reqQuery: { id: string }) {
             .sort('-visit')
             .limit(limit)
             .lean()
-        json = {
-            code: 200,
-            data: {
-                list: result,
-            },
-            message: 'success',
+
+        return {
+            list: result,
         }
     }
     catch (err: unknown) {
-        json = { code: -200, data: null, message: getErrorMessage(err) }
+        throw new ApiError(-200, getErrorMessage(err))
     }
-
-    return json
 }
