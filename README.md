@@ -55,18 +55,20 @@ After the success of the administrator to add, will automatically generate the a
 `mongodb`连接地址配置见`Dockerfile`的`ENV MONGO_URI=mongodb://host.docker.internal:27017`
 
 ```bash
-# 第一次执行时, 如果node镜像拉不下来, 可以执行以下命令:
+# 第一次执行时, 如果相关镜像拉不下来, 可以执行以下命令:
 docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11
 docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11 oven/bun:1.3
 docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/gcr.io/distroless/base-debian13:latest
-docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/gcr.io/distroless/base-debian13:latest distroless/base-debian13:latest
+docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/gcr.io/distroless/base-debian13:latest gcr.io/distroless/base:latest
+docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/mongo:7.0.31
+docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/mongo:7.0.31 mongo:7
 # 构建镜像
-docker build -t lincenying/bun-api-server:1.26.0318 -f ./Dockerfile .
+docker build -t lincenying/bun-api-server:1.26.0319 -f ./Dockerfile .
 # 运行镜像
 docker run -d \
 -p 4008:4000 \
 --name container-bun-api-server \
-lincenying/bun-api-server:1.26.0318
+lincenying/bun-api-server:1.26.0319
 # 进入容器
 docker exec -it container-bun-api-server /bin/bash
 # 停止容器
@@ -83,7 +85,7 @@ docker rmi images-bun-api-server
 
 ```yaml
 volumes:
-  - /Users/lincenying/web/mongodb/data:/data/db
+  - /Users/lincenying/web/mongodb7/data:/data/db
 ```
 
 ```bash

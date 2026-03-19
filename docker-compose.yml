@@ -17,10 +17,10 @@ services:
       - webnet
 
   api_mongo:
-    container_name: api-mongo-server
-    image: mongo:4.0
+    container_name: api-bun-mongo-server
+    image: mongo:7
     volumes:
-      - /Users/lincenying/web/mongodb/data:/data/db
+      - /Users/lincenying/web/mongodb7/data:/data/db
     ports:
       - 27017:27017
     networks:

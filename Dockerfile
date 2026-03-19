@@ -9,6 +9,7 @@ COPY bun.lock bun.lock
 RUN bun install
 
 COPY ./src ./src
+COPY ./tsconfig.json ./tsconfig.json
 
 ENV NODE_ENV=production
 
@@ -19,11 +20,12 @@ RUN bun build \
 	--outfile server \
 	src/index.ts
 
-FROM distroless/base-debian13:latest
+FROM gcr.io/distroless/base:latest
 
 WORKDIR /app
 
 COPY --from=build /app/server server
+COPY ./views ./views
 COPY ./public ./public
 COPY ./uploads ./uploads
 
