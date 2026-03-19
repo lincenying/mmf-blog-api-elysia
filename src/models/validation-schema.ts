@@ -12,7 +12,9 @@ export const validationModel = new Elysia()
             b_username: t.Optional(t.String()),
         }),
         'id': t.Object({
-            id: t.String(),
+            id: t.String({
+                error: 'id 必须是合法的字符串',
+            }),
         }),
         // 文章搜索条件
         'article.search': t.Object({

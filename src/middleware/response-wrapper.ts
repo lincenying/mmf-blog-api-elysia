@@ -27,8 +27,8 @@ export const responseWrapperMiddleware = new Elysia({
 
         return successResponse
     })
-    .onError(({ error, set }) => {
-    // 捕获未处理的异常并转换为错误响应
+    .onError(({ error, set, code }) => {
+        // 捕获未处理的异常并转换为错误响应
         let errorMessage = '服务器内部错误'
         let statusCode = 500
 
@@ -36,6 +36,9 @@ export const responseWrapperMiddleware = new Elysia({
             // 处理业务错误，直接使用错误码作为HTTP状态码
             errorMessage = error.message
             statusCode = error.code
+        }
+        else if (code === 'VALIDATION') {
+            errorMessage = `${error.customError ? error.customError : `${error.messageValue?.path}: ${error.messageValue?.message}`}`
         }
         else if (error instanceof Error) {
             // 其他错误默认使用 500 状态码

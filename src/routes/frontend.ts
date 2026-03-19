@@ -2,26 +2,18 @@ import { Elysia } from 'elysia'
 
 import { createCorsConfig } from '@/plugins'
 import { checkJWT } from '@/utils/check-jwt'
+import { ApiError } from '~/types'
 import * as frontendArticleHelper from '../api/frontend-article'
+
 import * as frontendCommentHelper from '../api/frontend-comment'
 
 import * as frontendLikeHelper from '../api/frontend-like'
-
 import * as frontendUserHelper from '../api/frontend-user'
 import { validationModel } from '../models/validation-schema'
 
 export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
     .use(createCorsConfig())
     .use(validationModel)
-    .onError(({ error, code }) => {
-        if (code === 'VALIDATION') {
-            return {
-                code: 422,
-                message: error,
-                data: '',
-            }
-        }
-    })
     .guard({ cookie: 'cookies' })
     .get('/article/list', async ({ query, cookie }) => {
         return await frontendArticleHelper.getList(query, cookie.userid.value)
@@ -47,11 +39,7 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
         beforeHandle: async ({ cookie: { b_user, b_userid, b_username } }) => {
             const check = await checkJWT(b_user.value, b_userid.value, b_username.value, 'admin')
             if (!check) {
-                return {
-                    code: -400,
-                    message: '登录验证失败',
-                    data: '',
-                }
+                throw new ApiError(403, '登录验证失败')
             }
         },
     }, app =>
@@ -71,11 +59,7 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
         beforeHandle: async ({ cookie: { user, userid, username } }) => {
             const check = await checkJWT(user.value, userid.value, username.value, 'user')
             if (!check) {
-                return {
-                    code: -400,
-                    message: '登录验证失败',
-                    data: '',
-                }
+                throw new ApiError(403, '登录验证失败')
             }
         },
     }, app =>
@@ -118,17 +102,15 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
     })
     .post('/user/login', async ({ body, cookie }) => {
         const json = await frontendUserHelper.login(body)
-        if (json.code === 200 && json.data) {
-            const { user, userid, username, useremail } = json.data
-            cookie.user.value = user
-            cookie.userid.value = userid
-            cookie.username.value = username
-            cookie.useremail.value = useremail
-            cookie.user.maxAge = 60 * 60 * 24 * 30
-            cookie.userid.maxAge = 60 * 60 * 24 * 30
-            cookie.username.maxAge = 60 * 60 * 24 * 30
-            cookie.useremail.maxAge = 60 * 60 * 24 * 30
-        }
+        const { user, userid, username, useremail } = json
+        cookie.user.value = user
+        cookie.userid.value = userid
+        cookie.username.value = username
+        cookie.useremail.value = useremail
+        cookie.user.maxAge = 60 * 60 * 24 * 30
+        cookie.userid.maxAge = 60 * 60 * 24 * 30
+        cookie.username.maxAge = 60 * 60 * 24 * 30
+        cookie.useremail.maxAge = 60 * 60 * 24 * 30
         return json
     }, {
         body: 'user.login',

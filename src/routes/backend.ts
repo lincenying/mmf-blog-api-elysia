@@ -2,9 +2,10 @@ import { Elysia } from 'elysia'
 
 import { createCorsConfig } from '@/plugins'
 import { checkJWT } from '@/utils/check-jwt'
+import { ApiError } from '~/types'
 import * as backendArticleHelper from '../api/backend-article'
-import * as backendCategoryHelper from '../api/backend-category'
 
+import * as backendCategoryHelper from '../api/backend-category'
 import * as backendUserHelper from '../api/backend-user'
 import * as frontendUserHelper from '../api/frontend-user'
 import { validationModel } from '../models/validation-schema'
@@ -12,25 +13,12 @@ import { validationModel } from '../models/validation-schema'
 export const backendRouter = new Elysia({ prefix: '/api/backend' })
     .use(createCorsConfig())
     .use(validationModel)
-    .onError(({ error, code }) => {
-        if (code === 'VALIDATION') {
-            return {
-                code: 422,
-                message: error,
-                data: '',
-            }
-        }
-    })
     .guard({ cookie: 'cookies' })
     .guard({
         beforeHandle: async ({ cookie: { b_user, b_userid, b_username } }) => {
             const check = await checkJWT(b_user.value, b_userid.value, b_username.value, 'admin')
             if (!check) {
-                return {
-                    code: -400,
-                    message: '登录验证失败',
-                    data: '',
-                }
+                throw new ApiError(403, '登录验证失败')
             }
         },
     }, app =>
@@ -147,15 +135,13 @@ export const backendRouter = new Elysia({ prefix: '/api/backend' })
     })
     .post('/admin/login', async ({ body, cookie }) => {
         const json = await backendUserHelper.login(body)
-        if (json.code === 200 && json.data) {
-            const { user, userid, username } = json.data
-            cookie.b_user.value = user
-            cookie.b_userid.value = userid
-            cookie.b_username.value = username
-            cookie.b_user.maxAge = 60 * 60 * 24 * 30
-            cookie.b_userid.maxAge = 60 * 60 * 24 * 30
-            cookie.b_username.maxAge = 60 * 60 * 24 * 30
-        }
+        const { user, userid, username } = json
+        cookie.b_user.value = user
+        cookie.b_userid.value = userid
+        cookie.b_username.value = username
+        cookie.b_user.maxAge = 60 * 60 * 24 * 30
+        cookie.b_userid.maxAge = 60 * 60 * 24 * 30
+        cookie.b_username.maxAge = 60 * 60 * 24 * 30
         return json
     }, {
         body: 'user.login',
