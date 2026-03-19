@@ -1,16 +1,16 @@
-import { cors } from '@elysiajs/cors'
 import { Elysia } from 'elysia'
 
-import { checkJWT } from '~/utils/check-jwt'
+import { createCorsConfig } from '@/plugins'
+import { checkJWT } from '@/utils/check-jwt'
 import * as backendArticleHelper from '../api/backend-article'
 import * as backendCategoryHelper from '../api/backend-category'
+
 import * as backendUserHelper from '../api/backend-user'
 import * as frontendUserHelper from '../api/frontend-user'
-
-import { validationModel } from '../plugins/model'
+import { validationModel } from '../models/validation-schema'
 
 export const backendRouter = new Elysia({ prefix: '/api/backend' })
-    .use(cors())
+    .use(createCorsConfig())
     .use(validationModel)
     .onError(({ error, code }) => {
         if (code === 'VALIDATION') {

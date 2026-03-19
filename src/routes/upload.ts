@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto'
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { cors } from '@elysiajs/cors'
 import { Elysia, t } from 'elysia'
+import { createCorsConfig } from '@/plugins'
 
 export const uploadRouter = new Elysia({ prefix: '/api/upload' })
-    .use(cors())
+    .use(createCorsConfig())
     .post('/image', async ({ body }) => {
         // 确保上传目录存在
         const UPLOAD_DIR = './uploads'

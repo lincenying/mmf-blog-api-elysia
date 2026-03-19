@@ -1,7 +1,7 @@
 import { html } from '@elysiajs/html'
 import { Elysia } from 'elysia'
 import Twig from 'twig'
-import { validationModel } from '~/plugins/model'
+import { validationModel } from '~/models/validation-schema'
 import { getTemplateDir } from '~/utils'
 import * as backendUserHelper from '../api/backend-user'
 
