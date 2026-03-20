@@ -10,6 +10,7 @@ RUN bun install
 
 COPY ./src ./src
 COPY ./tsconfig.json ./tsconfig.json
+COPY ./.env ./.env
 
 ENV NODE_ENV=production
 
@@ -28,6 +29,7 @@ COPY --from=build /app/server server
 COPY ./views ./views
 COPY ./public ./public
 COPY ./uploads ./uploads
+COPY ./.env ./.env
 
 ENV NODE_ENV=production
 
