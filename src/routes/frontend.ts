@@ -2,18 +2,20 @@ import { Elysia } from 'elysia'
 
 import { createCorsConfig } from '@/plugins'
 import { checkJWT } from '@/utils/check-jwt'
+import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { ApiError } from '~/types'
+
 import * as frontendArticleHelper from '../api/frontend-article'
 
 import * as frontendCommentHelper from '../api/frontend-comment'
-
 import * as frontendLikeHelper from '../api/frontend-like'
 import * as frontendUserHelper from '../api/frontend-user'
-import { validationModel } from '../models/validation-schema'
+import { validationSchema } from '../models/validation-schema'
 
 export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
     .use(createCorsConfig())
-    .use(validationModel)
+    .use(validationSchema)
+    .use(responseWrapperMiddleware)
     .guard({ cookie: 'cookies' })
     .get('/article/list', async ({ query, cookie }) => {
         return await frontendArticleHelper.getList(query, cookie.userid.value)
@@ -121,4 +123,7 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
         cookie.username.remove()
         cookie.useremail.remove()
         return frontendUserHelper.logout()
+    })
+    .all('/*', async () => {
+        throw new ApiError(404, '接口不存在')
     })

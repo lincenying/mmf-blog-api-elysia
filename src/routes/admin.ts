@@ -1,12 +1,12 @@
 import { html } from '@elysiajs/html'
 import { Elysia } from 'elysia'
 import Twig from 'twig'
-import { validationModel } from '~/models/validation-schema'
+import { validationSchema } from '~/models/validation-schema'
 import { getTemplateDir } from '~/utils'
 import * as backendUserHelper from '../api/backend-user'
 
 export const adminRouter = new Elysia({ prefix: '/backend' })
-    .use(validationModel)
+    .use(validationSchema)
     // .onError(({ error, code }) => {
     //     if (code === 'VALIDATION') {
     //         return {
