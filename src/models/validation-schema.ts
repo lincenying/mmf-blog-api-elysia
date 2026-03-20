@@ -65,7 +65,10 @@ export const validationSchema = new Elysia()
             content: t.String(),
         }),
         'user.insert': t.Object({
-            email: t.String(),
+            email: t.String({
+                format: 'email',
+                error: '无效的电子邮件 :(',
+            }),
             password: t.String(),
             username: t.String(),
         }),
@@ -76,7 +79,10 @@ export const validationSchema = new Elysia()
         }),
 
         'user.account': t.Object({
-            email: t.String(),
+            email: t.String({
+                format: 'email',
+                error: '无效的电子邮件 :(',
+            }),
         }),
 
         'user.password': t.Object({
@@ -86,7 +92,10 @@ export const validationSchema = new Elysia()
 
         'user.modify': t.Object({
             id: t.String(),
-            email: t.String(),
+            email: t.String({
+                format: 'email',
+                error: '无效的电子邮件 :(',
+            }),
             password: t.String(),
             username: t.String(),
         }),
