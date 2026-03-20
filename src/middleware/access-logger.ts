@@ -70,7 +70,7 @@ export const accessLoggerMiddleware = new Elysia({ name: 'access-logger' })
                     url: request.url,
                     status,
                     duration,
-                    contentLength: set.headers?.['content-length'] ?? '未知',
+                    // contentLength: set.headers?.['content-length'] ?? '未知',
                     endTime: new Date(endTime).toISOString(),
                 },
                 `${statusIcon} ${request.method} ${new URL(request.url).pathname} - ${statusText} ${status} (${duration}ms) [${clientInfo}]`,

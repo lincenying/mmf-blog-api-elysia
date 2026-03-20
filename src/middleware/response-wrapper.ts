@@ -38,7 +38,7 @@ export const responseWrapperMiddleware = new Elysia({
             statusCode = error.code
         }
         else if (code === 'VALIDATION') {
-            errorMessage = `${error.customError ? error.customError : `${error.messageValue?.path}: ${error.messageValue?.message}`}`
+            errorMessage = `${error.customError ? error.customError : `${error.messageValue?.path.replace('/', '')}: ${error.messageValue?.message}`}`
         }
         else if (error instanceof Error) {
             // 其他错误默认使用 500 状态码
