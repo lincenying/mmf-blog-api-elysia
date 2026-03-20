@@ -55,7 +55,7 @@ function marked(content: string) {
 /**
  * 获取文章列表的异步函数。
  */
-export async function getList(reqQuery: { page: string, limit: string, sort: string, key: string }) {
+export async function getList(reqQuery: { page?: string, limit?: string, sort?: string, key?: string }) {
     // 处理查询参数，设定默认值
     const sort = reqQuery.sort || '-update_date'
     const page = Number(reqQuery.page) || 1
