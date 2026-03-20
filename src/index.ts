@@ -1,4 +1,6 @@
 import { mkdir } from 'node:fs/promises'
+import { serverTiming } from '@elysiajs/server-timing'
+
 import { Elysia, file } from 'elysia'
 
 import { config } from '@/config'
@@ -8,6 +10,7 @@ import { createStaticConfig, createSwaggerConfig } from './plugins'
 import { adminRouter } from './routes/admin'
 import { backendRouter } from './routes/backend'
 import { frontendRouter } from './routes/frontend'
+import { jwtRouter } from './routes/jwt'
 import { uploadRouter } from './routes/upload'
 
 (async () => {
@@ -20,6 +23,7 @@ const app = new Elysia({
         maxRequestBodySize: 1024 * 1024 * 256, // 256MB
     },
 })
+    .use(serverTiming())
     .use(createStaticConfig())
     .use(createSwaggerConfig())
     .use(accessLoggerMiddleware)
@@ -27,6 +31,7 @@ const app = new Elysia({
     .use(backendRouter)
     .use(uploadRouter)
     .use(adminRouter)
+    .use(jwtRouter)
     .get('/favicon.ico', file('./public/favicon.ico'))
     .get('/robots.txt', file('./public/robots.txt'))
     .all('/sm/*', () => '')

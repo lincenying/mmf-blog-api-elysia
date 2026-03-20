@@ -16,6 +16,8 @@
   "dependencies": {
     "@elysiajs/cors": "^1.4.1",
     "@elysiajs/html": "^1.4.0",
+    "@elysiajs/jwt": "^1.4.1",
+    "@elysiajs/server-timing": "^1.4.0",
     "@elysiajs/static": "^1.4.7",
     "@lincy/utils": "^0.7.3",
     "dayjs": "^1.11.20",
