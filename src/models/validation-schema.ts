@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia'
 
-export const validationModel = new Elysia()
+export const validationSchema = new Elysia()
     .model({
         // 登录cookies
         'cookies': t.Object({
@@ -13,7 +13,9 @@ export const validationModel = new Elysia()
         }),
         'id': t.Object({
             id: t.String({
-                error: 'id 必须是合法的字符串',
+                minLength: 24,
+                maxLength: 24,
+                error: 'ID必须是合法的字符串',
             }),
         }),
         // 文章搜索条件
@@ -25,10 +27,10 @@ export const validationModel = new Elysia()
         }),
         // 文章列表分页
         'article.page': t.Object({
-            page: t.String(),
-            limit: t.String(),
-            sort: t.String(),
-            key: t.String(),
+            page: t.Optional(t.String()),
+            limit: t.Optional(t.String()),
+            sort: t.Optional(t.String()),
+            key: t.Optional(t.String()),
         }),
         'user.page': t.Object({
             page: t.Optional(t.Number()),
