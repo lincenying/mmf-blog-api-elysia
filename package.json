@@ -40,7 +40,7 @@
     "@types/md5": "^2.3.6",
     "@types/twig": "^1.12.17",
     "bun-types": "latest",
-    "convict": "^6.2.4",
+    "convict": "^6.2.5",
     "jiti": "^2.6.1",
     "js-yaml": "^4.1.1",
     "pino-pretty": "^13.1.3",
