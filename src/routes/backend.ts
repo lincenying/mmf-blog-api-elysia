@@ -78,7 +78,7 @@ export const backendRouter = new Elysia({ prefix: '/api/backend' })
             .get('/admin/list', async ({ query }) => {
                 return await backendUserHelper.getList(query)
             }, {
-                query: 'user.page',
+                query: 'other.page',
             })
             .get('/admin/item', async ({ query }) => {
                 return await backendUserHelper.getItem(query)
@@ -103,7 +103,7 @@ export const backendRouter = new Elysia({ prefix: '/api/backend' })
             .get('/user/list', async ({ query }) => {
                 return await frontendUserHelper.getList(query)
             }, {
-                query: 'user.page',
+                query: 'other.page',
             })
             .get('/user/item', async ({ query, cookie }) => {
                 const userid = query.id || cookie.userid.value || ''
