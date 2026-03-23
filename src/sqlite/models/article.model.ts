@@ -24,7 +24,9 @@ export class ArticleModel {
     }
 
     public static getById(id: number): Article | never {
-        const result: Article | null = db.query<Article, number>('SELECT * FROM article WHERE id = ?').get(id)
+        const result: Article | null = db.query<Article, number>(
+            'SELECT * FROM article WHERE id = ?',
+        ).get(id)
         if (!result) {
             throw new ApiError(201, '文章不存在')
         }
@@ -33,8 +35,6 @@ export class ArticleModel {
     }
 
     public static deleteById(id: number): void | never {
-        this.getById(id)
-
         const result: Article | null = db.query<Article, number>('DELETE FROM article WHERE id = ? RETURNING *').get(id)
 
         if (!result) {
@@ -43,7 +43,9 @@ export class ArticleModel {
     }
 
     public static updateById(updateData: Required<ArticleUpdate>): Article | null {
-        const result = db.prepare<Article, (string | number)[]>('UPDATE article SET title = ?, content = ?, category = ?, date = ? where id = ? RETURNING *').get(
+        const result = db.prepare<Article, (string | number)[]>(
+            'UPDATE article SET title = ?, content = ?, category = ?, date = ? where id = ? RETURNING *',
+        ).get(
             updateData.title,
             updateData.content,
             updateData.category,
@@ -59,8 +61,10 @@ export class ArticleModel {
     }
 
     public static create(createData: ArticleUpdate): Article | null {
-        const result: Article | null = db.prepare<ArticleUpdate, Array<string | number>>(`INSERT INTO article (title, content, date, author, category, views) VALUES (?, ?, ?, ?, ?, ?) RETURNING *`).get(
-            createData.title,
+        const result: Article | null = db.prepare<ArticleUpdate, Array<string | number>>(
+            `INSERT INTO article (title, content, date, author, category, views) VALUES (?, ?, ?, ?, ?, ?) RETURNING *`,
+        ).get(
+            ...createData.title,
             createData.content,
             createData.date,
             createData.author,
