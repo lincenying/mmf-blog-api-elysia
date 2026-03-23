@@ -1,6 +1,6 @@
 import Database from 'bun:sqlite'
 
-const db: Database = new Database('./.data/db.sqlite3')
+const db = new Database('./.data/db.sqlite3')
 
 db.query(`CREATE TABLE IF NOT EXISTS "article" (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
