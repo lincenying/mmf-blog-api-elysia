@@ -15,3 +15,6 @@ export const adminRouter = new Elysia({ prefix: '/backend' })
     }, {
         body: 'user.insert',
     })
+    .get('/chat', async () => {
+        return await AdminTemplateController.chatTemplate()
+    })

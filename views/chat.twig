@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>极速聊天室 - Elysia WebSocket</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(145deg, #e0eaf4 0%, #cfdef3 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        /* 聊天主容器 */
+        .chat-container {
+            width: 100%;
+            max-width: 1300px;
+            height: 90vh;
+            background: rgba(255, 255, 255, 0.96);
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(0px);
+            transition: all 0.2s ease;
+        }
+
+        /* 顶部栏 - 连接控制区 */
+        .connection-bar {
+            background: #ffffffdd;
+            backdrop-filter: blur(12px);
+            background: linear-gradient(135deg, #1a2a3a 0%, #0f1a24 100%);
+            color: white;
+            padding: 1rem 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            flex: 1;
+            min-width: 130px;
+        }
+
+        .control-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #b9d0f0;
+        }
+
+        .control-group input {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 1.2rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            color: white;
+            outline: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .control-group input:focus {
+            background: rgba(255,255,255,0.25);
+            border-color: #6ea8fe;
+            box-shadow: 0 0 0 2px rgba(110,168,254,0.4);
+        }
+
+        .control-group input::placeholder {
+            color: #cbd5e6;
+            font-weight: 400;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.7rem;
+            align-items: center;
+            margin-left: auto;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #2c3e4e;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.2s;
+            color: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        button.primary {
+            background: #2c7da0;
+            color: white;
+        }
+        button.primary:hover {
+            background: #1f5e7a;
+            transform: scale(0.98);
+        }
+        button.danger {
+            background: #b33b2c;
+        }
+        button.danger:hover {
+            background: #8e2e21;
+        }
+        button.secondary {
+            background: #4a627a;
+        }
+        button.secondary:hover {
+            background: #2f4459;
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 0.3rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .status-led {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #6c757d;
+            box-shadow: 0 0 2px white;
+        }
+        .status-led.connected {
+            background: #2ecc71;
+            box-shadow: 0 0 6px #2ecc71;
+        }
+        .status-led.connecting {
+            background: #f39c12;
+        }
+
+        /* 消息区域 */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem 1.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            background: #f8fafd;
+            scroll-behavior: smooth;
+        }
+
+        /* 消息气泡容器 */
+        .message-item {
+            display: flex;
+            width: 100%;
+            animation: fadeInUp 0.2s ease-out;
+        }
+        /* 自己消息右对齐 */
+        .message-item.own {
+            justify-content: flex-end;
+        }
+        .message-item.system {
+            justify-content: center;
+        }
+        /* 普通他人消息左对齐 */
+        .message-item.other {
+            justify-content: flex-start;
+        }
+
+        .bubble {
+            max-width: 70%;
+            padding: 0.65rem 1rem;
+            border-radius: 1.5rem;
+            position: relative;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        /* 自己气泡 */
+        .own .bubble {
+            background: #2c7da0;
+            color: white;
+            border-bottom-right-radius: 0.3rem;
+        }
+        /* 他人气泡 */
+        .other .bubble {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #1e293b;
+            border-bottom-left-radius: 0.3rem;
+        }
+        /* 系统通知样式 */
+        .system .bubble {
+            background: #e9ecef;
+            color: #4a5568;
+            font-size: 0.8rem;
+            text-align: center;
+            border-radius: 2rem;
+            max-width: 85%;
+            font-weight: 500;
+            backdrop-filter: blur(2px);
+            box-shadow: none;
+        }
+
+        .message-name {
+            font-weight: 700;
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            display: block;
+            opacity: 0.8;
+        }
+        .own .message-name {
+            color: #e0f0ff;
+        }
+        .other .message-name {
+            color: #2c7da0;
+        }
+        .message-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+        .message-time {
+            font-size: 0.65rem;
+            margin-top: 0.3rem;
+            text-align: right;
+            opacity: 0.6;
+            letter-spacing: 0.3px;
+        }
+
+        /* 底部发送区 */
+        .send-area {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e2edf2;
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .send-area input {
+            flex: 1;
+            border: 1px solid #cbd5e1;
+            border-radius: 2rem;
+            padding: 0.8rem 1.2rem;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.2s;
+            background: #ffffff;
+        }
+        .send-area input:focus {
+            border-color: #2c7da0;
+            box-shadow: 0 0 0 2px rgba(44,125,160,0.2);
+        }
+        .send-area button {
+            background: #2c7da0;
+            padding: 0.7rem 1.6rem;
+            font-weight: bold;
+            border-radius: 2rem;
+        }
+        .send-area button:hover {
+            background: #1f5e7a;
+        }
+
+        /* 滚动条美化 */
+        .messages-area::-webkit-scrollbar {
+            width: 5px;
+        }
+        .messages-area::-webkit-scrollbar-track {
+            background: #eef2f6;
+            border-radius: 10px;
+        }
+        .messages-area::-webkit-scrollbar-thumb {
+            background: #b9cadb;
+            border-radius: 10px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 680px) {
+            .connection-bar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem;
+            }
+            .action-buttons {
+                margin-left: 0;
+                justify-content: space-between;
+            }
+            .bubble {
+                max-width: 85%;
+            }
+            .messages-area {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <!-- 连接控制栏 -->
+    <div class="connection-bar">
+        <div class="control-group">
+            <label>🔌 服务器地址</label>
+            <input type="text" id="serverInput" placeholder="例如: localhost:4000 或 192.168.1.5:8080" value="localhost:4000">
+        </div>
+        <div class="control-group">
+            <label>🏠 房间号</label>
+            <input type="text" id="roomInput" placeholder="房间名称" value="general">
+        </div>
+        <div class="control-group">
+            <label>👤 昵称</label>
+            <input type="text" id="nameInput" placeholder="你的名字" value="旅行者">
+        </div>
+        <div class="action-buttons">
+            <button id="connectBtn" class="primary">🔗 连接</button>
+            <button id="disconnectBtn" class="danger" disabled>❌ 断开</button>
+            <div class="status-indicator">
+                <span class="status-led" id="statusLed"></span>
+                <span id="statusText">未连接</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 聊天消息展示区 -->
+    <div class="messages-area" id="messagesArea">
+        <div class="message-item system">
+            <div class="bubble">
+                💬 欢迎使用聊天室 · 请先设置房间和昵称，点击「连接」
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部发送消息栏 -->
+    <div class="send-area">
+        <input type="text" id="messageInput" placeholder="输入消息..." autocomplete="off" disabled>
+        <button id="sendBtn" disabled>📨 发送</button>
+    </div>
+</div>
+
+<script>
+    // ---------- DOM 元素绑定 ----------
+    const serverInput = document.getElementById('serverInput');
+    const roomInput = document.getElementById('roomInput');
+    const nameInput = document.getElementById('nameInput');
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const messageInput = document.getElementById('messageInput');
+    const messagesArea = document.getElementById('messagesArea');
+    const statusLed = document.getElementById('statusLed');
+    const statusText = document.getElementById('statusText');
+
+    // WebSocket 实例 & 当前连接状态
+    let ws = null;
+    let isConnected = false;
+    let currentRoom = '';
+    let currentName = '';
+
+    // ---------- 辅助函数 ----------
+    // 格式化时间 (time: 毫秒时间戳)
+    function formatTime(timestamp) {
+        if (!timestamp) return '';
+        const date = new Date(timestamp);
+        return `${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}:${date.getSeconds().toString().padStart(2,'0')}`;
+    }
+
+    // 安全转义 HTML (防止 XSS)
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    // 添加消息到聊天区域 (核心渲染)
+    function appendMessage(data) {
+        // data 结构: { message: string, name: string, time: number }
+        if (!data || typeof data !== 'object') return;
+        let { message, name, time } = data;
+        if (message === undefined || name === undefined) return;
+
+        // 对消息体和昵称进行转义
+        const safeMessage = escapeHtml(String(message));
+        const safeName = escapeHtml(String(name));
+        const msgTime = time ? formatTime(time) : formatTime(Date.now());
+
+        // 创建消息容器
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message-item';
+
+        // 判断消息类型: 系统通知 (name === 'notice') 还是普通聊天
+        const isSystem = (name === 'notice');
+        const isOwn = (!isSystem && currentName === name && isConnected);
+
+        if (isSystem) {
+            messageDiv.classList.add('system');
+        } else if (isOwn) {
+            messageDiv.classList.add('own');
+        } else {
+            messageDiv.classList.add('other');
+        }
+
+        // 构建气泡内部结构
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+
+        if (!isSystem) {
+            // 普通消息: 显示发送者昵称 + 内容 + 时间
+            const nameSpan = document.createElement('div');
+            nameSpan.className = 'message-name';
+            nameSpan.textContent = safeName;
+            bubble.appendChild(nameSpan);
+
+            const textSpan = document.createElement('div');
+            textSpan.className = 'message-text';
+            textSpan.textContent = safeMessage;  // 保留换行符，但 textContent 不会解析html
+            bubble.appendChild(textSpan);
+
+            const timeSpan = document.createElement('div');
+            timeSpan.className = 'message-time';
+            timeSpan.textContent = msgTime;
+            bubble.appendChild(timeSpan);
+        } else {
+            // 系统通知样式 (公告)
+            const textSpan = document.createElement('div');
+            textSpan.className = 'message-text';
+            textSpan.style.textAlign = 'center';
+            textSpan.innerHTML = `📢 ${safeMessage}`;  // 注意这里消息本身已经是转义过的
+            bubble.appendChild(textSpan);
+            const timeSpan = document.createElement('div');
+            timeSpan.className = 'message-time';
+            timeSpan.style.textAlign = 'center';
+            timeSpan.textContent = msgTime;
+            bubble.appendChild(timeSpan);
+        }
+
+        messageDiv.appendChild(bubble);
+        messagesArea.appendChild(messageDiv);
+        // 自动滚动到底部
+        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+
+    // 显示本地系统消息（不经过服务器，仅用于UI反馈）
+    function addLocalSystemMessage(text) {
+        const sysMsg = {
+            message: text,
+            name: 'notice',
+            time: Date.now()
+        };
+        appendMessage(sysMsg);
+    }
+
+    // 清空聊天记录 (保留一条欢迎提示)
+    function clearChatHistory() {
+        while (messagesArea.firstChild) {
+            messagesArea.removeChild(messagesArea.firstChild);
+        }
+        // 添加默认占位
+        const placeholderDiv = document.createElement('div');
+        placeholderDiv.className = 'message-item system';
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.innerHTML = '💬 聊天记录已清空 · 连接后消息将自动显示';
+        placeholderDiv.appendChild(bubble);
+        messagesArea.appendChild(placeholderDiv);
+    }
+
+    // 更新UI组件启用/禁用状态 (连接时禁用配置输入框/断开相反)
+    function updateUIForConnection(connected) {
+        isConnected = connected;
+        if (connected) {
+            connectBtn.disabled = true;
+            disconnectBtn.disabled = false;
+            sendBtn.disabled = false;
+            messageInput.disabled = false;
+            serverInput.disabled = true;
+            roomInput.disabled = true;
+            nameInput.disabled = true;
+            statusLed.classList.add('connected');
+            statusLed.classList.remove('connecting');
+            statusText.innerText = `已连接 (${currentRoom} / ${currentName})`;
+            // 聚焦输入框
+            messageInput.focus();
+        } else {
+            connectBtn.disabled = false;
+            disconnectBtn.disabled = true;
+            sendBtn.disabled = true;
+            messageInput.disabled = true;
+            serverInput.disabled = false;
+            roomInput.disabled = false;
+            nameInput.disabled = false;
+            statusLed.classList.remove('connected', 'connecting');
+            statusText.innerText = '未连接';
+            messageInput.value = '';
+        }
+    }
+
+    // 断开连接 (干净关闭)
+    function disconnectWebSocket() {
+        if (ws) {
+            // 移除所有事件监听，避免重复触发
+            ws.onopen = null;
+            ws.onmessage = null;
+            ws.onclose = null;
+            ws.onerror = null;
+            if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+                ws.close(1000, "用户主动断开");
+            }
+            ws = null;
+        }
+        if (isConnected) {
+            updateUIForConnection(false);
+            // 注意: 服务端close会自动广播离开消息，但当前客户端已断开收不到。仅UI提示
+            addLocalSystemMessage(`已断开连接，不再接收消息。`);
+        } else {
+            // 保证UI重置
+            updateUIForConnection(false);
+        }
+        currentRoom = '';
+        currentName = '';
+    }
+
+    // 建立 WebSocket 连接
+    function connectWebSocket() {
+        // 1. 获取输入值并校验
+        let server = serverInput.value.trim();
+        let room = roomInput.value.trim();
+        let name = nameInput.value.trim();
+
+        if (!server) {
+            addLocalSystemMessage('❌ 请填写服务器地址 (例如 localhost:4000)');
+            return;
+        }
+        if (!room) {
+            addLocalSystemMessage('❌ 房间号不能为空');
+            return;
+        }
+        if (!name) {
+            addLocalSystemMessage('❌ 昵称不能为空');
+            return;
+        }
+
+        // 标准化服务器地址: 如果用户输入包含 http:// 或 https:// 开头则转换提醒，否则构建 ws://
+        let wsUrl;
+        // 移除可能多余的前缀
+        let cleanServer = server.replace(/^https?:\/\//i, '').replace(/^ws:\/\//i, '');
+        // 如果包含了路径 /chat 则提醒去掉，我们将固定拼接 /chat
+        if (cleanServer.includes('/chat')) {
+            addLocalSystemMessage('⚠️ 服务器地址不需要包含 /chat 路径，系统会自动拼接');
+            // 提取 host:port 部分
+            cleanServer = cleanServer.split('/')[0];
+        }
+        // 构建最终websocket url
+        wsUrl = `ws://${cleanServer}/chat?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name)}`;
+
+        // 如果当前已连接，先断开之前的
+        if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+            disconnectWebSocket();
+        }
+
+        // 重置UI为连接中状态
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+        statusLed.classList.remove('connected');
+        statusLed.classList.add('connecting');
+        statusText.innerText = '连接中...';
+
+        // 清空旧的消息区域（可选，保留聊天记录但为了清爽可不清空，但推荐清空重连后历史混乱？不清空也可，但用户可能想重置）
+        // 为避免不同房间消息混淆，可以在重连时加一个分割线或者保留，但为了干净，增加一个系统分隔提醒
+        addLocalSystemMessage(`🔄 正在连接房间「${room}」, 昵称: ${name} ...`);
+
+        try {
+            ws = new WebSocket(wsUrl);
+
+            // 超时保护 (10秒未连接则提示)
+            let connectionTimeout = setTimeout(() => {
+                if (ws && ws.readyState !== WebSocket.OPEN) {
+                    addLocalSystemMessage('⏰ 连接超时，请检查服务器地址是否正确，或后端服务是否运行');
+                    if (ws) ws.close();
+                    updateUIForConnection(false);
+                    clearTimeout(connectionTimeout);
+                }
+            }, 10000);
+
+            ws.onopen = () => {
+                clearTimeout(connectionTimeout);
+                // 记录当前房间&名称，用于消息样式判断
+                currentRoom = room;
+                currentName = name;
+                updateUIForConnection(true);
+                // 注意：服务端 open 时会自动广播 "xxx has enter the room"
+                // 不需要客户端额外发送欢迎消息，等待服务器推送即可
+                addLocalSystemMessage(`✅ 成功进入房间「${currentRoom}」，开始聊天吧~`);
+            };
+
+            ws.onmessage = (event) => {
+                // 服务端发送的数据是 JSON 字符串，格式符合 { message, name, time }
+                try {
+                    const data = JSON.parse(event.data);
+                    // 简单校验完整性
+                    if (typeof data.message === 'string' && typeof data.name === 'string') {
+                        appendMessage(data);
+                    } else {
+                        console.warn('收到格式异常的消息', data);
+                    }
+                } catch (e) {
+                    console.error('解析消息失败', e);
+                    // 如果服务端意外发送纯文本，做安全展示但不崩
+                    addLocalSystemMessage(`⚠️ 收到非标准消息: ${escapeHtml(String(event.data))}`);
+                }
+            };
+
+            ws.onclose = (event) => {
+                clearTimeout(connectionTimeout);
+                const wasConnected = isConnected;
+                if (ws) {
+                    // 清理引用
+                    ws = null;
+                }
+                updateUIForConnection(false);
+                if (wasConnected) {
+                    addLocalSystemMessage(`🔌 与聊天室断开连接 (code: ${event.code})，如需继续请重新连接。`);
+                } else {
+                    if (event.code !== 1000) {
+                        addLocalSystemMessage(`⚠️ 连接关闭 (code: ${event.code})，请检查服务器或网络。`);
+                    }
+                }
+                currentRoom = '';
+                currentName = '';
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket错误:', error);
+                addLocalSystemMessage(`❌ 连接发生错误，请确认后端Elysia服务正常运行在 ${cleanServer} 并支持 /chat`);
+                // 注意 onerror 后一般会触发 onclose，不重复处理UI，但可以提示
+                statusText.innerText = '连接错误';
+                statusLed.classList.remove('connecting');
+            };
+
+        } catch (err) {
+            console.error(err);
+            addLocalSystemMessage(`🚫 连接失败: ${err.message}`);
+            updateUIForConnection(false);
+            if (ws) ws = null;
+        }
+    }
+
+    // 发送消息
+    function sendMessage() {
+        if (!isConnected || !ws || ws.readyState !== WebSocket.OPEN) {
+            addLocalSystemMessage('⚠️ 未连接到聊天室，请先点击「连接」');
+            return;
+        }
+        let content = messageInput.value.trim();
+        if (content === '') {
+            return;
+        }
+        // 发送纯文本字符串 (服务端 body: t.String())
+        ws.send(content);
+        appendMessage({"message":content,"name":currentName,"time":Date.now()})
+        // 清空输入框
+        messageInput.value = '';
+        messageInput.focus();
+        // 注意：消息会由服务器广播回来，接收后通过 onmessage 渲染，无需本地重复添加
+    }
+
+    // 事件绑定
+    connectBtn.addEventListener('click', () => {
+        // 避免重复连接
+        if (isConnected) {
+            addLocalSystemMessage('已经处于连接状态，如需更换房间请先断开');
+            return;
+        }
+        connectWebSocket();
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+        if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+            disconnectWebSocket();
+        } else {
+            updateUIForConnection(false);
+            addLocalSystemMessage('已重置连接状态');
+        }
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // 页面关闭前主动断开连接 (优雅关闭)
+    window.addEventListener('beforeunload', () => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.close(1000, "页面关闭");
+        }
+    });
+
+    // 初始提示: 演示如何连接
+    setTimeout(() => {
+        addLocalSystemMessage('✨ 提示: 确保Elysia后端已启动，填写服务器地址(如 localhost:4000)，房间和昵称后点击连接');
+    }, 100);
+</script>
+</body>
+</html>

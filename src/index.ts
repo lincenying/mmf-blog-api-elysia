@@ -13,6 +13,7 @@ import { frontendRouter } from './routes/frontend'
 import { jwtRouter } from './routes/jwt'
 import { sqliteRouter } from './routes/sqlite'
 import { uploadRouter } from './routes/upload'
+import { wsRouter } from './routes/ws'
 
 (async () => {
     const UPLOAD_DIR = './uploads'
@@ -34,6 +35,7 @@ const app = new Elysia({
     .use(adminRouter)
     .use(jwtRouter)
     .use(sqliteRouter)
+    .use(wsRouter)
     .get('/favicon.ico', file('./public/favicon.ico'))
     .get('/robots.txt', file('./public/robots.txt'))
     .all('/sm/*', () => '')

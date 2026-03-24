@@ -14,7 +14,7 @@ export const wsRouter = new Elysia()
 
             ws.subscribe(room)
             ws.publish(room, {
-                message: `${name} has enter the room`,
+                message: `${name} 进入了聊天室`,
                 name: 'notice',
                 time: Date.now(),
             })
@@ -32,7 +32,7 @@ export const wsRouter = new Elysia()
             const { room, name } = ws.data.query
 
             ws.publish(room, {
-                message: `${name} has leave the room`,
+                message: `${name} 离开了聊天室`,
                 name: 'notice',
                 time: Date.now(),
             })

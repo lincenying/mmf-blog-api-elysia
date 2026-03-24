@@ -30,4 +30,14 @@ export class AdminTemplateController {
         })
         return html
     }
+
+    public static async chatTemplate() {
+        const templateDir = getTemplateDir('./views/chat.twig')
+        const html = await new Promise<string>((resove) => {
+            Twig.renderFile(templateDir, { title: '聊天室', message: '' }, (err, html) => {
+                resove(err ? err.toString() : html)
+            })
+        })
+        return html
+    }
 }
