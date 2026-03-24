@@ -51,7 +51,9 @@ export const sqliteRouter = new Elysia({ prefix: '/api/sqlite' })
         '/article/:id',
         ({ params: { id }, body }) => ArticleController.updateArticleById({ id, ...body }),
         {
-            params: t.Object({ id: t.Numeric() }),
+            params: t.Object({
+                id: t.Numeric(),
+            }),
             body: t.Object({
                 title: t.String(),
                 content: t.String(),

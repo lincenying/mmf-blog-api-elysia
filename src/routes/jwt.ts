@@ -3,9 +3,10 @@ import { Elysia, t } from 'elysia'
 
 import { secretClient } from '~/config'
 
-import { ApiError } from '~/middleware/response-wrapper'
+import { ApiError, responseWrapperMiddleware } from '~/middleware/response-wrapper'
 
 export const jwtRouter = new Elysia({ prefix: '/api/jwt' })
+    .use(responseWrapperMiddleware)
     .use(jwt({
         name: 'jwt',
         secret: secretClient,
@@ -19,12 +20,11 @@ export const jwtRouter = new Elysia({ prefix: '/api/jwt' })
 
         return `Sign in as ${params.name}`
     })
-    .get('/profile', async ({ jwt, set, cookie: { auth } }) => {
+    .get('/profile', async ({ jwt, cookie: { auth } }) => {
         const profile = await jwt.verify(auth.value)
 
         if (!profile) {
-            set.status = 401
-            return 'Unauthorized'
+            throw new ApiError(401, 'Unauthorized')
         }
 
         return `Hello ${profile.name}`
