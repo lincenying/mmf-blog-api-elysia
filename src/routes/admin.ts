@@ -18,3 +18,7 @@ export const adminRouter = new Elysia({ prefix: '/backend' })
     .get('/chat', async () => {
         return await AdminTemplateController.chatTemplate()
     })
+    .get('/send', ({ server }) => {
+        server?.publish('general', JSON.stringify({ message: 'hello', name: 'lincenying', time: new Date() }))
+        return '发送成功'
+    })
