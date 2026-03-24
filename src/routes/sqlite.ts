@@ -1,9 +1,9 @@
 import { Elysia, t } from 'elysia'
+import { ArticleController } from '~/controllers/sqlite-article.controller'
 import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { createCorsConfig } from '~/plugins'
-import { ArticleController } from '~/sqlite/controllers/article.controller'
 
-export const sqliteRouter = new Elysia({ prefix: '/api/sqlite3' })
+export const sqliteRouter = new Elysia({ prefix: '/api/sqlite' })
     .use(createCorsConfig())
     .use(responseWrapperMiddleware)
     .post(

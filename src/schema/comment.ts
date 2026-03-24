@@ -1,4 +1,4 @@
-import type { Comment } from '~/types/comment'
+import type { Comment } from '~/types/comment.types'
 
 import mongooseAutopopulate from 'mongoose-autopopulate'
 import mongoose from '../mongoose'

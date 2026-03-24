@@ -2,14 +2,13 @@ import { Elysia } from 'elysia'
 
 import { createCorsConfig } from '@/plugins'
 import { checkJWT } from '@/utils/check-jwt'
-import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
-import { ApiError } from '~/types'
+import { BackendArticleController } from '~/controllers/backend-article.controller'
+import { BackendCategoryController } from '~/controllers/backend-category.controller'
 
-import * as backendArticleHelper from '../api/backend-article'
-import * as backendCategoryHelper from '../api/backend-category'
-import * as backendUserHelper from '../api/backend-user'
-import * as frontendUserHelper from '../api/frontend-user'
-import { validationSchema } from '../models/validation-schema'
+import { BackendUserController } from '~/controllers/backend-user.controller'
+import { ApiError, responseWrapperMiddleware } from '~/middleware/response-wrapper'
+import { FrontendUserModel } from '~/models/frontend-user.model'
+import { validationSchema } from '../schema/validation-schema'
 
 export const backendRouter = new Elysia({ prefix: '/api/backend' })
     .use(createCorsConfig())
@@ -26,117 +25,117 @@ export const backendRouter = new Elysia({ prefix: '/api/backend' })
     }, app =>
         app
             .get('/article/list', async ({ query }) => {
-                return await backendArticleHelper.getList(query)
+                return await BackendArticleController.getList(query)
             }, {
                 query: 'article.page',
             })
             .get('/article/item', async ({ query }) => {
-                return await backendArticleHelper.getItem(query)
+                return await BackendArticleController.getItem(query)
             }, {
                 query: 'id',
             })
             .post('/article/insert', async ({ body }) => {
-                return await backendArticleHelper.insert(body)
+                return await BackendArticleController.insert(body)
             }, {
                 body: 'article.insert',
             })
             .post('/article/modify', async ({ body }) => {
-                return await backendArticleHelper.modify(body)
+                return await BackendArticleController.modify(body)
             }, {
                 body: 'article.modify',
             })
             .get('/article/delete', async ({ query }) => {
-                return await backendArticleHelper.deletes(query)
+                return await BackendArticleController.deletes(query)
             }, {
                 query: 'id',
             })
             .get('/article/recover', async ({ query }) => {
-                return await backendArticleHelper.recover(query)
+                return await BackendArticleController.recover(query)
             }, {
                 query: 'id',
             })
             .post('/category/insert', async ({ body }) => {
-                return await backendCategoryHelper.insert(body)
+                return await BackendCategoryController.insert(body)
             }, {
                 body: 'category.insert',
             })
             .post('/category/modify', async ({ body }) => {
-                return await backendCategoryHelper.modify(body)
+                return await BackendCategoryController.modify(body)
             }, {
                 body: 'category.modify',
             })
             .get('/category/delete', async ({ query }) => {
-                return await backendCategoryHelper.deletes(query)
+                return await BackendCategoryController.deletes(query)
             }, {
                 query: 'id',
             })
             .get('/category/recover', async ({ query }) => {
-                return await backendCategoryHelper.recover(query)
+                return await BackendCategoryController.recover(query)
             }, {
                 query: 'id',
             })
             .get('/admin/list', async ({ query }) => {
-                return await backendUserHelper.getList(query)
+                return await BackendUserController.getList(query)
             }, {
                 query: 'other.page',
             })
             .get('/admin/item', async ({ query }) => {
-                return await backendUserHelper.getItem(query)
+                return await BackendUserController.getItem(query)
             }, {
                 query: 'id',
             })
             .post('/admin/modify', async ({ body }) => {
-                return await backendUserHelper.modify(body)
+                return await BackendUserController.modify(body)
             }, {
                 body: 'user.modify',
             })
             .get('/admin/delete', async ({ query }) => {
-                return await backendUserHelper.deletes(query)
+                return await BackendUserController.deletes(query)
             }, {
                 query: 'id',
             })
             .get('/admin/recover', async ({ query }) => {
-                return await backendUserHelper.recover(query)
+                return await BackendUserController.recover(query)
             }, {
                 query: 'id',
             })
             .get('/user/list', async ({ query }) => {
-                return await frontendUserHelper.getList(query)
+                return await FrontendUserModel.getList(query)
             }, {
                 query: 'other.page',
             })
             .get('/user/item', async ({ query, cookie }) => {
                 const userid = query.id || cookie.userid.value || ''
-                return await frontendUserHelper.getItem(userid)
+                return await FrontendUserModel.getItem(userid)
             }, {
                 query: 'id',
             })
             .post('/user/modify', async ({ body }) => {
-                return await frontendUserHelper.modify(body)
+                return await FrontendUserModel.modify(body)
             }, {
                 body: 'user.modify',
             })
             .get('/user/delete', async ({ query }) => {
-                return await frontendUserHelper.deletes(query)
+                return await FrontendUserModel.deletes(query)
             }, {
                 query: 'id',
             })
             .get('/user/recover', async ({ query }) => {
-                return await frontendUserHelper.recover(query)
+                return await FrontendUserModel.recover(query)
             }, {
                 query: 'id',
             }),
     )
     .get('/category/list', async () => {
-        return await backendCategoryHelper.getList()
+        return await BackendCategoryController.getList()
     })
     .get('/category/item', async ({ query }) => {
-        return await backendCategoryHelper.getItem(query)
+        return await BackendCategoryController.getItem(query)
     }, {
         query: 'id',
     })
     .post('/admin/login', async ({ body, cookie }) => {
-        const json = await backendUserHelper.login(body)
+        const json = await BackendUserController.login(body)
         const { user, userid, username } = json
         cookie.b_user.value = user
         cookie.b_userid.value = userid
@@ -152,7 +151,7 @@ export const backendRouter = new Elysia({ prefix: '/api/backend' })
         cookie.b_user.remove()
         cookie.b_userid.remove()
         cookie.b_username.remove()
-        return backendUserHelper.logout()
+        return BackendUserController.logout()
     })
     .all('/*', async () => {
         throw new ApiError(404, '接口不存在')

@@ -1,7 +1,22 @@
-import type { ApiResponse } from '@/types'
+import type { ApiResponse } from '~/types/global.types'
 
 import { Elysia } from 'elysia'
-import { ApiError } from '@/types'
+
+/**
+ * API 错误类
+ *
+ * 继承自Error，包含错误码信息
+ * 中间件会自动检测此类型的错误并根据错误码设置相应的HTTP状态码
+ */
+export class ApiError extends Error {
+    public readonly code: number
+
+    constructor(code: number, message: string) {
+        super(message)
+        this.code = code
+        this.name = 'ApiError'
+    }
+}
 
 /**
  * 响应包装中间件

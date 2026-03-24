@@ -1,4 +1,4 @@
-import type { Category } from '~/types/catagory'
+import type { Category } from '~/types/catagory.types'
 import mongoose from '../mongoose'
 
 /**

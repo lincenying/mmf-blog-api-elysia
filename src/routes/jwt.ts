@@ -3,7 +3,7 @@ import { Elysia, t } from 'elysia'
 
 import { secretClient } from '~/config'
 
-import { ApiError } from '~/types'
+import { ApiError } from '~/middleware/response-wrapper'
 
 export const jwtRouter = new Elysia({ prefix: '/api/jwt' })
     .use(jwt({

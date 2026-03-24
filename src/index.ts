@@ -11,8 +11,8 @@ import { adminRouter } from './routes/admin'
 import { backendRouter } from './routes/backend'
 import { frontendRouter } from './routes/frontend'
 import { jwtRouter } from './routes/jwt'
+import { sqliteRouter } from './routes/sqlite'
 import { uploadRouter } from './routes/upload'
-import { sqliteRouter } from './sqlite/routers/articles'
 
 (async () => {
     const UPLOAD_DIR = './uploads'

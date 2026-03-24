@@ -1,0 +1,102 @@
+import { ApiError } from '~/middleware/response-wrapper'
+
+import mongoose from '~/mongoose'
+import ArticleM from '../schema/article'
+import { getErrorMessage } from '../utils'
+
+export class FrontendLikeModel {
+/**
+ * 文章点赞
+ */
+    public static async like(reqQuery: { id: string }, user_id?: string) {
+        if (!user_id) {
+            throw new ApiError(201, '请先登录')
+        }
+
+        const { id: article_id } = reqQuery
+
+        if (!article_id || !mongoose.Types.ObjectId.isValid(article_id)) {
+            throw new ApiError(201, '参数错误')
+        }
+
+        try {
+            const filter = {
+                _id: article_id,
+                is_delete: 0,
+            }
+            const result = await ArticleM.findOne(filter).lean()
+            if (result && (!result.likes || result.likes.findIndex(item => item === user_id) === -1)) {
+                const search = {
+                    _id: article_id,
+                }
+                const body = {
+                    $inc: {
+                        like: 1,
+                    },
+                    $push: {
+                        likes: user_id,
+                    },
+                }
+                await ArticleM.updateOne(search, body).exec()
+            }
+            return '操作成功'
+        }
+        catch (err: unknown) {
+            throw new ApiError(-200, getErrorMessage(err))
+        }
+    }
+
+    /**
+     * 取消文章点赞
+     */
+    public static async unlike(reqQuery: { id: string }, user_id?: string) {
+        if (!user_id) {
+            throw new ApiError(201, '请先登录')
+        }
+
+        const { id: article_id } = reqQuery
+
+        if (!article_id || !mongoose.Types.ObjectId.isValid(article_id)) {
+            throw new ApiError(201, '参数错误')
+        }
+
+        try {
+            const filter = {
+                _id: article_id,
+            }
+            const body = {
+                $inc: {
+                    like: -1,
+                },
+                $pullAll: {
+                    likes: [user_id],
+                },
+            }
+            await ArticleM.updateOne(filter, body).exec()
+            return '操作成功'
+        }
+        catch (err: unknown) {
+            throw new ApiError(-200, getErrorMessage(err))
+        }
+    }
+
+    /**
+     * 重置文章点赞数量
+     */
+    public static async resetLike() {
+        try {
+            const result = await ArticleM.find().exec()
+            const length = result.length
+            for (let i = 0; i < length; i++) {
+                const item = result[i]
+                const filter = { _id: item._id }
+                const body = { like: item.likes?.length }
+                await ArticleM.findOneAndUpdate(filter, body, { new: true }).exec()
+            }
+            return '操作成功'
+        }
+        catch (err: unknown) {
+            throw new ApiError(-200, getErrorMessage(err))
+        }
+    }
+}

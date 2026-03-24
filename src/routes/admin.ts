@@ -1,9 +1,8 @@
 import { html } from '@elysiajs/html'
 import { Elysia } from 'elysia'
-import Twig from 'twig'
-import { validationSchema } from '~/models/validation-schema'
-import { getTemplateDir } from '~/utils'
-import * as backendUserHelper from '../api/backend-user'
+
+import { AdminTemplateController } from '~/controllers/admin-template.controller'
+import { validationSchema } from '~/schema/validation-schema'
 
 export const adminRouter = new Elysia({ prefix: '/backend' })
     .use(validationSchema)
@@ -18,29 +17,10 @@ export const adminRouter = new Elysia({ prefix: '/backend' })
     // })
     .use(html())
     .get('/', async () => {
-        const templateDir = getTemplateDir('./views/index.twig')
-        const html = await new Promise<string>((resove) => {
-            Twig.renderFile(templateDir, { title: '添加管理员', message: '' }, (err, html) => {
-                resove(err ? err.toString() : html)
-            })
-        })
-        return html
+        return await AdminTemplateController.getAdminTemplate()
     })
-    .post('/', async ({ body: { email, password, username } }) => {
-        let message = ''
-        if (!email || !password || !username) {
-            message = '请填写完整信息'
-        }
-        else {
-            message = await backendUserHelper.insert(email, password, username)
-        }
-        const templateDir = getTemplateDir('./views/index.twig')
-        const html = await new Promise<string>((resove) => {
-            Twig.renderFile(templateDir, { title: '添加管理员', message }, (err, html) => {
-                resove(err ? err.toString() : html)
-            })
-        })
-        return html
+    .post('/', async ({ body }) => {
+        return await AdminTemplateController.postAdminTemplate(body)
     }, {
         body: 'user.insert',
     })

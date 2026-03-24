@@ -2,15 +2,13 @@ import { Elysia } from 'elysia'
 
 import { createCorsConfig } from '@/plugins'
 import { checkJWT } from '@/utils/check-jwt'
-import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
-import { ApiError } from '~/types'
+import { FrontendArticleController } from '~/controllers/frontend-article.controller'
+import { ApiError, responseWrapperMiddleware } from '~/middleware/response-wrapper'
 
-import * as frontendArticleHelper from '../api/frontend-article'
-
-import * as frontendCommentHelper from '../api/frontend-comment'
-import * as frontendLikeHelper from '../api/frontend-like'
-import * as frontendUserHelper from '../api/frontend-user'
-import { validationSchema } from '../models/validation-schema'
+import { FrontendCommentModel } from '~/models/frontend-comment.model'
+import { FrontendLikeModel } from '~/models/frontend-like.model'
+import { FrontendUserModel } from '~/models/frontend-user.model'
+import { validationSchema } from '../schema/validation-schema'
 
 export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
     .use(createCorsConfig())
@@ -18,22 +16,22 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
     .use(responseWrapperMiddleware)
     .guard({ cookie: 'cookies' })
     .get('/article/list', async ({ query, cookie }) => {
-        return await frontendArticleHelper.getList(query, cookie.userid.value)
+        return await FrontendArticleController.getList(query, cookie.userid.value)
     }, {
         query: 'article.search',
     })
     .get('/article/item', async ({ query, cookie }) => {
-        return await frontendArticleHelper.getItem(query, cookie.userid.value)
+        return await FrontendArticleController.getItem(query, cookie.userid.value)
     }, {
         query: 'id',
     })
     .get('/trending', async ({ query }) => {
-        return await frontendArticleHelper.getTrending(query)
+        return await FrontendArticleController.getTrending(query)
     }, {
         query: 'id',
     })
     .get('/comment/list', async ({ query }) => {
-        return await frontendCommentHelper.getList(query)
+        return await FrontendCommentModel.getList(query)
     }, {
         query: 'id',
     })
@@ -47,12 +45,12 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
     }, app =>
         app
             .get('/comment/delete', async ({ query }) => {
-                return await frontendCommentHelper.deletes(query)
+                return await FrontendCommentModel.deletes(query)
             }, {
                 query: 'id',
             })
             .get('/comment/recover', async ({ query }) => {
-                return await frontendCommentHelper.recover(query)
+                return await FrontendCommentModel.recover(query)
             }, {
                 query: 'id',
             }),
@@ -67,43 +65,43 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
     }, app =>
         app
             .post('/comment/insert', async ({ body, cookie }) => {
-                return await frontendCommentHelper.insert(body, cookie.userid.value)
+                return await FrontendCommentModel.insert(body, cookie.userid.value)
             }, {
                 body: 'comment.insert',
             })
             .post('/user/account', async ({ body, cookie }) => {
-                return await frontendUserHelper.account(body, cookie.userid.value)
+                return await FrontendUserModel.account(body, cookie.userid.value)
             }, {
                 body: 'user.account',
             })
             .post('/user/password', async ({ body, cookie }) => {
-                return await frontendUserHelper.password(body, cookie.userid.value)
+                return await FrontendUserModel.password(body, cookie.userid.value)
             }, {
                 body: 'user.password',
             })
             .get('/like', async ({ query, cookie }) => {
-                return await frontendLikeHelper.like(query, cookie.userid.value)
+                return await FrontendLikeModel.like(query, cookie.userid.value)
             }, {
                 query: 'id',
             })
             .get('/unlike', async ({ query, cookie }) => {
-                return await frontendLikeHelper.unlike(query, cookie.userid.value)
+                return await FrontendLikeModel.unlike(query, cookie.userid.value)
             }, {
                 query: 'id',
             })
             .get('/reset/like', async () => {
-                return await frontendLikeHelper.resetLike()
+                return await FrontendLikeModel.resetLike()
             }, {
                 query: 'id',
             }),
     )
     .post('/user/insert', async ({ body }) => {
-        return await frontendUserHelper.insert(body)
+        return await FrontendUserModel.insert(body)
     }, {
         body: 'user.insert',
     })
     .post('/user/login', async ({ body, cookie }) => {
-        const json = await frontendUserHelper.login(body)
+        const json = await FrontendUserModel.login(body)
         const { user, userid, username, useremail } = json
         cookie.user.value = user
         cookie.userid.value = userid
@@ -122,7 +120,7 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
         cookie.userid.remove()
         cookie.username.remove()
         cookie.useremail.remove()
-        return frontendUserHelper.logout()
+        return FrontendUserModel.logout()
     })
     .all('/*', async () => {
         throw new ApiError(404, '接口不存在')
