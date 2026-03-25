@@ -27,7 +27,7 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
     .get('/trending', async ({ query }) => {
         return await FrontendArticleController.getTrending(query)
     }, {
-        query: 'id',
+        query: 'partial-id',
     })
     .get('/comment/list', async ({ query }) => {
         return await FrontendCommentModel.getList(query)

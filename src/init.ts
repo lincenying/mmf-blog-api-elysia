@@ -13,8 +13,10 @@ function creatSecret() {
     if (!fsExistsSync('./src/config/_secret.js')) {
         const secretServer1 = Math.random() * 1000000
         const secretClient1 = Math.random() * 1000000
-        const secret1 = `export const secretServer = '${secretServer1}'
-export const secretClient = '${secretClient1}'`
+        const secret1 = `
+            export const secretServer = '${secretServer1}'
+            export const secretClient = '${secretClient1}'
+        `
         fs.writeFileSync('./src/config/_secret.js', secret1)
         console.log('./src/config/_secret.js: 生成成功')
     }
@@ -25,9 +27,11 @@ export const secretClient = '${secretClient1}'`
 
 function creatQiNiu() {
     if (!fsExistsSync('./src/config/_qiniu.js')) {
-        const secret = `export const accessKey = ''
-export const secretKey = ''
-export const bucket = ''`
+        const secret = `
+            export const accessKey = ''
+            export const secretKey = ''
+            export const bucket = ''
+        `
         fs.writeFileSync('./src/config/_qiniu.js', secret)
         console.log('./src/config/_qiniu.js: 生成成功')
     }

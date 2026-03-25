@@ -15,6 +15,14 @@ export const validationSchema = new Elysia()
                 b_username: t.String(),
             }),
         ),
+        'partial-id': t.Partial(
+            t.Object({
+                id: tt.String('ID', {
+                    minLength: 24,
+                    maxLength: 24,
+                }),
+            }),
+        ),
         'id': t.Object({
             id: tt.String('ID', {
                 minLength: 24,

@@ -151,7 +151,7 @@ export class FrontendArticleModel {
     /**
      * 前台浏览时, 获取文章推荐列表
      */
-    public static async getTrending(reqQuery: { id: string }) {
+    public static async getTrending(reqQuery: { id?: string }) {
         const id = reqQuery.id
 
         try {

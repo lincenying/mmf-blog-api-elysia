@@ -11,7 +11,7 @@ export class FrontendArticleController {
         return FrontendArticleModel.getItem(reqQuery, user_id)
     }
 
-    public static async getTrending(reqQuery: { id: string }) {
+    public static async getTrending(reqQuery: { id?: string }) {
         return FrontendArticleModel.getTrending(reqQuery)
     }
 }
