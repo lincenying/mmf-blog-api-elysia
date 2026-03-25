@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia'
 import { createCorsConfig } from '@/plugins'
 import { UploadImageController } from '~/controllers/upload-image.controller'
 import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
+import { tt } from '~/schema/validation-schema-error'
 
 export const uploadRouter = new Elysia({ prefix: '/api/upload' })
     .use(createCorsConfig())
@@ -10,9 +11,8 @@ export const uploadRouter = new Elysia({ prefix: '/api/upload' })
         return UploadImageController.uploadImage(body.file)
     }, {
         body: t.Object({
-            file: t.File({
+            file: tt.File('文件', {
                 type: 'image',
-                error: '请选择文件',
             }),
         }),
     })

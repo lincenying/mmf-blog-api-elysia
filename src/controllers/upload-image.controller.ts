@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
+import { ApiError } from '~/middleware/response-wrapper'
 
 export class UploadImageController {
     public static async uploadImage(file: File) {
@@ -11,7 +12,7 @@ export class UploadImageController {
         try {
             // 检查是否真的上传了文件
             if (!file || !(file instanceof File)) {
-                return { code: 201, message: 'No file uploaded or invalid field name' }
+                throw new ApiError(201, '未上传文件或字段名称无效')
             }
 
             // 生成安全的文件名（使用 UUID 保留原始扩展名）
@@ -24,20 +25,15 @@ export class UploadImageController {
 
             // 返回成功信息
             return {
-                code: 200,
-                success: true,
-                message: 'File uploaded successfully',
-                data: {
-                    filename: safeName,
-                    originalName: file.name,
-                    size: file.size,
-                    type: file.type,
-                },
+                filename: safeName,
+                originalName: file.name,
+                size: file.size,
+                type: file.type,
             }
         }
         catch (error) {
-            console.error('Upload error:', error)
-            return { code: 500, message: 'Internal server error' }
+            console.error('上传错误:', error)
+            throw new ApiError(500, '服务器内部错误')
         }
     }
 }
