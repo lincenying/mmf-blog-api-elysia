@@ -1,6 +1,6 @@
 import pino from 'pino'
 
-import { config } from '@/config'
+import { config } from '~/config'
 
 /**
  * 生产级日志实例

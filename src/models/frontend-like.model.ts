@@ -1,8 +1,7 @@
 import mongoose from '~/db/mongoose'
-
 import { ApiError } from '~/middleware/response-wrapper'
-import ArticleM from '../schema/article'
-import { getErrorMessage } from '../utils'
+import ArticleM from '~/schema/article'
+import { getErrorMessage } from '~/utils'
 
 export class FrontendLikeModel {
 /**

@@ -1,14 +1,14 @@
 import type { UserModify } from '~/types/user'
-import fs from 'node:fs'
 
+import fs from 'node:fs'
 import jwt from 'jsonwebtoken'
 import md5 from 'md5'
-import mongoose from '~/db/mongoose'
 
+import { config, secretServer as secret } from '~/config'
+import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
-import { config, secretServer as secret } from '../config'
-import AdminM from '../schema/admin'
-import { fsExistsSync, getErrorMessage, getNowTime } from '../utils'
+import AdminM from '~/schema/admin'
+import { fsExistsSync, getErrorMessage, getNowTime } from '~/utils'
 
 export class BackendUserModel {
 /**

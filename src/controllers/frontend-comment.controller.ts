@@ -1,4 +1,5 @@
 import type { ReqListQuery } from '~/types/global.types'
+
 import { FrontendCommentModel } from '~/models/frontend-comment.model'
 
 export class FrontendCommentController {

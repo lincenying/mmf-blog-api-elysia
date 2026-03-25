@@ -2,7 +2,6 @@ import { jwt } from '@elysiajs/jwt'
 import { Elysia, t } from 'elysia'
 
 import { secretClient } from '~/config'
-
 import { ApiError, responseWrapperMiddleware } from '~/middleware/response-wrapper'
 
 export const jwtRouter = new Elysia({ prefix: '/api/jwt' })

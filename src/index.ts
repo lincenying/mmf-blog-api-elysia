@@ -1,10 +1,9 @@
 import { mkdir } from 'node:fs/promises'
 import { serverTiming } from '@elysiajs/server-timing'
-
 import { Elysia, file } from 'elysia'
 
-import { config } from '@/config'
-import { logger } from '@/utils/logger'
+import { config } from '~/config'
+import { logger } from '~/utils/logger'
 import { accessLoggerMiddleware } from './middleware/access-logger'
 import { createStaticConfig, createSwaggerConfig } from './plugins'
 import { adminRouter } from './routes/admin'

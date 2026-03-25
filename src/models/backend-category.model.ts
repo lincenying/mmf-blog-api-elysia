@@ -1,9 +1,9 @@
 import type { CategoryInsert, CategoryModify } from '~/types/catagory.types'
-import mongoose from '~/db/mongoose'
 
+import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
-import CategoryM from '../schema/category'
-import { getErrorMessage, getNowTime } from '../utils'
+import CategoryM from '~/schema/category'
+import { getErrorMessage, getNowTime } from '~/utils'
 
 export class BackendArticleModel {
     /**

@@ -1,6 +1,6 @@
 import { staticPlugin } from '@elysiajs/static'
 
-import { config } from '@/config'
+import { config } from '~/config'
 
 /**
  * 创建静态文件配置

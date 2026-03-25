@@ -1,7 +1,7 @@
 import type { Comment } from '~/types/comment.types'
 
 import mongooseAutopopulate from 'mongoose-autopopulate'
-import mongoose from '../db/mongoose'
+import mongoose from '~/db/mongoose'
 
 /**
  * 评论模型

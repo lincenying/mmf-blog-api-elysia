@@ -1,5 +1,5 @@
 import mongooseAutopopulate from 'mongoose-autopopulate'
-import mongoose from '../db/mongoose'
+import mongoose from '~/db/mongoose'
 
 const TemplateSchema = new mongoose.Schema({
     string: {

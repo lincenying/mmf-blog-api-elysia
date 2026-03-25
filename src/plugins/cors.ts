@@ -1,6 +1,6 @@
 import { cors } from '@elysiajs/cors'
 
-import { config } from '@/config'
+import { config } from '~/config'
 
 /**
  * 创建 CORS 配置

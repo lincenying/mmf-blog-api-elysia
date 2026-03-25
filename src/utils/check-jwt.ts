@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { secretClient, secretServer } from '../config'
+import { secretClient, secretServer } from '~/config'
 
 /**
  * 检查JWT（JSON Web Token）的有效性。

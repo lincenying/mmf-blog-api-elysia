@@ -3,8 +3,8 @@ import type { ReqListQuery } from '~/types/global.types'
 
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
-import ArticleM from '../schema/article'
-import { getErrorMessage } from '../utils'
+import ArticleM from '~/schema/article'
+import { getErrorMessage } from '~/utils'
 
 function replaceHtmlTag(html: string) {
     return html

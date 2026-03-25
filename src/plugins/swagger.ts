@@ -1,6 +1,6 @@
 import { swagger } from '@elysiajs/swagger'
 
-import { config } from '@/config'
+import { config } from '~/config'
 
 /**
  * 获取服务访问 URL

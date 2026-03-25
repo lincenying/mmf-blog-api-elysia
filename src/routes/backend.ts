@@ -1,14 +1,13 @@
 import { Elysia } from 'elysia'
 
 import { createCorsConfig } from '@/plugins'
-import { checkJWT } from '@/utils/check-jwt'
 import { BackendArticleController } from '~/controllers/backend-article.controller'
 import { BackendCategoryController } from '~/controllers/backend-category.controller'
-
 import { BackendUserController } from '~/controllers/backend-user.controller'
 import { ApiError, responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { FrontendUserModel } from '~/models/frontend-user.model'
-import { validationSchema } from '../schema/validation-schema'
+import { validationSchema } from '~/schema/validation-schema'
+import { checkJWT } from '~/utils/check-jwt'
 
 export const backendRouter = new Elysia({ prefix: '/api/backend' })
     .use(createCorsConfig())

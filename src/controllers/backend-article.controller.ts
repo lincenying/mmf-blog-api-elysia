@@ -1,4 +1,5 @@
 import type { ArticleInsert, ArticleModify } from '~/types/article.types'
+
 import { BackendArticleModel } from '~/models/backend-article.model'
 
 export class BackendArticleController {

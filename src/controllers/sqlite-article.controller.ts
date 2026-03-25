@@ -1,5 +1,6 @@
 import type { Article, ArticleUpdate } from '~/types/sqlite.types'
-import { ArticleModel } from '../models/sqlite-article.model'
+
+import { ArticleModel } from '~/models/sqlite-article.model'
 
 export class ArticleController {
     public static getAllArticles(page: number, pageSize: number) {

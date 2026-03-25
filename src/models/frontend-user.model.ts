@@ -1,13 +1,13 @@
 import type { UserModify } from '~/types/user'
-import { strLen } from '@lincy/utils'
 
+import { strLen } from '@lincy/utils'
 import jwt from 'jsonwebtoken'
 import md5 from 'md5'
-import { ApiError } from '~/middleware/response-wrapper'
 
-import { config, secretClient as secret } from '../config'
-import UserM from '../schema/user'
-import { getErrorMessage, getNowTime } from '../utils'
+import { config, secretClient as secret } from '~/config'
+import { ApiError } from '~/middleware/response-wrapper'
+import UserM from '~/schema/user'
+import { getErrorMessage, getNowTime } from '~/utils'
 
 export class FrontendUserModel {
 /**

@@ -1,4 +1,5 @@
 import type { CategoryInsert, CategoryModify } from '~/types/catagory.types'
+
 import { BackendArticleModel } from '~/models/backend-category.model'
 
 export class BackendCategoryController {

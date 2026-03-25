@@ -1,4 +1,5 @@
 import type { ReqListQuery } from '~/types/global.types'
+
 import { FrontendArticleModel } from '~/models/frontend-article.model'
 
 export class FrontendArticleController {

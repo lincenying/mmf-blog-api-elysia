@@ -1,5 +1,6 @@
 import type { Article } from '~/types/article.types'
-import mongoose from '../db/mongoose'
+
+import mongoose from '~/db/mongoose'
 
 /**
  * 文章模型的Schema定义

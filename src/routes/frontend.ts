@@ -1,14 +1,13 @@
 import { Elysia } from 'elysia'
 
-import { createCorsConfig } from '@/plugins'
-import { checkJWT } from '@/utils/check-jwt'
 import { FrontendArticleController } from '~/controllers/frontend-article.controller'
 import { ApiError, responseWrapperMiddleware } from '~/middleware/response-wrapper'
-
 import { FrontendCommentModel } from '~/models/frontend-comment.model'
 import { FrontendLikeModel } from '~/models/frontend-like.model'
 import { FrontendUserModel } from '~/models/frontend-user.model'
-import { validationSchema } from '../schema/validation-schema'
+import { createCorsConfig } from '~/plugins'
+import { validationSchema } from '~/schema/validation-schema'
+import { checkJWT } from '~/utils/check-jwt'
 
 export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
     .use(createCorsConfig())

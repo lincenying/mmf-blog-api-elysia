@@ -1,6 +1,6 @@
 import { Elysia } from 'elysia'
 
-import { logger } from '@/utils/logger'
+import { logger } from '~/utils/logger'
 
 /**
  * Access 日志中间件

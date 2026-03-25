@@ -1,12 +1,13 @@
 import type { Article, ArticleInsert, ArticleModify } from '~/types/article.types'
-import hljs from 'highlight.js'
 
+import hljs from 'highlight.js'
 import markdownIt from 'markdown-it'
+
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
-import ArticleM from '../schema/article'
-import CategoryM from '../schema/category'
-import { getErrorMessage, getNowTime } from '../utils'
+import ArticleM from '~/schema/article'
+import CategoryM from '~/schema/category'
+import { getErrorMessage, getNowTime } from '~/utils'
 
 interface ArticleSearch {
     title?: {
