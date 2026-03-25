@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia'
 import { ArticleController } from '~/controllers/sqlite-article.controller'
 import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { createCorsConfig } from '~/plugins'
+import { tt } from '~/schema/validation-schema-error'
 
 export const sqliteRouter = new Elysia({ prefix: '/api/sqlite' })
     .use(createCorsConfig())
@@ -11,11 +12,11 @@ export const sqliteRouter = new Elysia({ prefix: '/api/sqlite' })
         ({ body }) => ArticleController.create(body),
         {
             body: t.Object({
-                title: t.String(),
-                content: t.String(),
-                date: t.String(),
-                author: t.String(),
-                category: t.String(),
+                title: tt.String('标题'),
+                content: tt.String('内容'),
+                date: tt.String('日期'),
+                author: tt.String('作者'),
+                category: tt.String('分类'),
             }),
         },
     )
@@ -34,7 +35,7 @@ export const sqliteRouter = new Elysia({ prefix: '/api/sqlite' })
         ({ params: { id } }) => ArticleController.deleteArticleById(id),
         {
             params: t.Object({
-                id: t.Numeric(),
+                id: tt.Numeric('文章ID'),
             }),
         },
     )
@@ -43,7 +44,7 @@ export const sqliteRouter = new Elysia({ prefix: '/api/sqlite' })
         ({ params: { id } }) => ArticleController.getArticleById(id),
         {
             params: t.Object({
-                id: t.Numeric(),
+                id: tt.Numeric('文章ID'),
             }),
         },
     )
@@ -52,14 +53,14 @@ export const sqliteRouter = new Elysia({ prefix: '/api/sqlite' })
         ({ params: { id }, body }) => ArticleController.updateArticleById({ id, ...body }),
         {
             params: t.Object({
-                id: t.Numeric(),
+                id: tt.Numeric('文章ID'),
             }),
             body: t.Object({
-                title: t.String(),
-                content: t.String(),
-                date: t.String(),
-                author: t.String(),
-                category: t.String(),
+                title: tt.String('标题'),
+                content: tt.String('内容'),
+                date: tt.String('日期'),
+                author: tt.String('作者'),
+                category: tt.String('分类'),
             }),
         },
     )

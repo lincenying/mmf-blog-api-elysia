@@ -1,5 +1,5 @@
 import type { User } from '~/types/user'
-import mongoose from '../mongoose'
+import mongoose from '../db/mongoose'
 
 /**
  * 用户模型

@@ -44,7 +44,7 @@ export const responseWrapperMiddleware = new Elysia({
     })
     .onError(({ error, set, code }) => {
         // 捕获未处理的异常并转换为错误响应
-        let errorMessage = '服务器内部错误'
+        let errorMessage: any = '服务器内部错误'
         let statusCode = 500
 
         if (error instanceof ApiError) {
@@ -53,7 +53,8 @@ export const responseWrapperMiddleware = new Elysia({
             statusCode = error.code
         }
         else if (code === 'VALIDATION') {
-            errorMessage = `${error.customError ? error.customError : `${error.messageValue?.path.replace('/', '')}: ${error.messageValue?.message}`}`
+            console.log(error)
+            errorMessage = error.customError ? error.customError : `${error.messageValue?.path.replace('/', '')}: ${error.messageValue?.message}`
         }
         else if (error instanceof Error) {
             // 其他错误默认使用 500 状态码

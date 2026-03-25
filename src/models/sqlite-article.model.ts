@@ -1,6 +1,6 @@
 import type { Article, ArticleUpdate } from '~/types/sqlite.types'
+import db from '~/db/sqlite'
 import { ApiError } from '~/middleware/response-wrapper'
-import db from '~/sqlite-config'
 
 export class ArticleModel {
     public static getAll(page: number = 1, pageSize: number = 10) {

@@ -1,5 +1,5 @@
 import type { Category } from '~/types/catagory.types'
-import mongoose from '../mongoose'
+import mongoose from '../db/mongoose'
 
 /**
  * 定义分类模型的Schema。

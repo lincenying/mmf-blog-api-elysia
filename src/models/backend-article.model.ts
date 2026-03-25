@@ -2,8 +2,8 @@ import type { Article, ArticleInsert, ArticleModify } from '~/types/article.type
 import hljs from 'highlight.js'
 
 import markdownIt from 'markdown-it'
+import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
-import mongoose from '~/mongoose'
 import ArticleM from '../schema/article'
 import CategoryM from '../schema/category'
 import { getErrorMessage, getNowTime } from '../utils'

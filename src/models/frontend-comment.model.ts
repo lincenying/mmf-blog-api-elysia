@@ -1,8 +1,8 @@
 import type { Comment } from '~/types/comment.types'
 import type { ReqListQuery } from '~/types/global.types'
 
+import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
-import mongoose from '~/mongoose'
 import ArticleM from '../schema/article'
 import CommentM from '../schema/comment'
 import { getErrorMessage, getNowTime } from '../utils'

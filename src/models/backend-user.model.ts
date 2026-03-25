@@ -3,9 +3,9 @@ import fs from 'node:fs'
 
 import jwt from 'jsonwebtoken'
 import md5 from 'md5'
-import { ApiError } from '~/middleware/response-wrapper'
+import mongoose from '~/db/mongoose'
 
-import mongoose from '~/mongoose'
+import { ApiError } from '~/middleware/response-wrapper'
 import { config, secretServer as secret } from '../config'
 import AdminM from '../schema/admin'
 import { fsExistsSync, getErrorMessage, getNowTime } from '../utils'

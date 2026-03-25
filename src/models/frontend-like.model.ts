@@ -1,6 +1,6 @@
-import { ApiError } from '~/middleware/response-wrapper'
+import mongoose from '~/db/mongoose'
 
-import mongoose from '~/mongoose'
+import { ApiError } from '~/middleware/response-wrapper'
 import ArticleM from '../schema/article'
 import { getErrorMessage } from '../utils'
 

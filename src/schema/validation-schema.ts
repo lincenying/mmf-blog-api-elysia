@@ -1,5 +1,7 @@
 import { Elysia, t } from 'elysia'
 
+import { tt } from './validation-schema-error'
+
 export const validationSchema = new Elysia()
     .model({
         // 登录cookies
@@ -14,10 +16,9 @@ export const validationSchema = new Elysia()
             }),
         ),
         'id': t.Object({
-            id: t.String({
+            id: tt.String('ID', {
                 minLength: 24,
                 maxLength: 24,
-                error: 'ID必须是合法的字符串',
             }),
         }),
         // 文章搜索条件
@@ -47,74 +48,72 @@ export const validationSchema = new Elysia()
         ),
         // 发布文章
         'article.insert': t.Object({
-            category: t.String(),
-            content: t.String(),
-            title: t.String(),
-            html: t.String(),
+            category: tt.String('分类'),
+            content: tt.String('内容'),
+            title: tt.String('标题'),
+            html: tt.String('HTML'),
         }),
         // 修改文章
         'article.modify': t.Object({
-            id: t.String(),
-            category_old: t.String(),
-            category_name: t.String(),
-            category: t.String(),
-            content: t.String(),
-            title: t.String(),
-            html: t.String(),
+            id: tt.String('ID'),
+            category_old: tt.String('旧分类'),
+            category_name: tt.String('新分类'),
+            category: tt.String('分类'),
+            content: tt.String('内容'),
+            title: tt.String('标题'),
+            html: tt.String('HTML'),
         }),
 
         // 新增分类
         'category.insert': t.Object({
-            cate_name: t.String(),
-            cate_order: t.String(),
+            cate_name: tt.String('分类名称'),
+            cate_order: tt.String('分类排序'),
         }),
         // 修改分类
         'category.modify': t.Object({
             id: t.String(),
-            cate_name: t.String(),
-            cate_order: t.String(),
+            cate_name: tt.String('分类名称'),
+            cate_order: tt.String('分类排序'),
         }),
 
         // 发表评论
         'comment.insert': t.Object({
-            id: t.String(),
-            content: t.String(),
+            id: tt.String('文章ID'),
+            content: tt.String('评论内容'),
         }),
 
         // 注册用户
         'user.insert': t.Object({
-            email: t.String({
+            email: tt.String('邮箱', {
                 format: 'email',
-                error: '无效的电子邮件 :(',
             }),
-            password: t.String(),
-            username: t.String(),
+            password: tt.String('密码'),
+            username: tt.String('用户名'),
         }),
         // 登录用户
         'user.login': t.Object({
-            password: t.String(),
-            username: t.String(),
+            password: tt.String('密码'),
+            username: tt.String('用户名'),
         }),
         // 修改用户信息
         'user.account': t.Object({
-            email: t.String({
+            email: tt.String('邮箱', {
                 format: 'email',
-                error: '无效的电子邮件 :(',
             }),
+
         }),
         // 修改密码
         'user.password': t.Object({
-            old_password: t.String(),
-            password: t.String(),
+            old_password: tt.String('旧密码'),
+            password: tt.String('新密码'),
         }),
         // 修改用户信息
         'user.modify': t.Object({
-            id: t.String(),
-            email: t.String({
+            id: tt.String('ID'),
+            email: tt.String('邮箱', {
                 format: 'email',
-                error: '无效的电子邮件 :(',
             }),
-            password: t.String(),
-            username: t.String(),
+            password: tt.String('密码'),
+            username: tt.String('用户名'),
         }),
     })

@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "bun run --watch src/index.ts",
+    "dev": "bun --watch run src/index.ts",
     "build": "bun build --minify --outfile ./dist/index.js src/index.ts --target bun",
     "build:compile": "bun build --compile --minify-whitespace --minify-syntax --target bun --outfile server src/index.ts",
     "init:config": "bun run src/init.ts",

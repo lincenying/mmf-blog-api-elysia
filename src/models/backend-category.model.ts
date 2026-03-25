@@ -1,7 +1,7 @@
 import type { CategoryInsert, CategoryModify } from '~/types/catagory.types'
-import { ApiError } from '~/middleware/response-wrapper'
+import mongoose from '~/db/mongoose'
 
-import mongoose from '~/mongoose'
+import { ApiError } from '~/middleware/response-wrapper'
 import CategoryM from '../schema/category'
 import { getErrorMessage, getNowTime } from '../utils'
 

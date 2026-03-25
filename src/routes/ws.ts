@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia'
 import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { createCorsConfig } from '~/plugins'
 import { validationSchema } from '~/schema/validation-schema'
+import { tt } from '~/schema/validation-schema-error'
 
 export const wsRouter = new Elysia()
     .use(createCorsConfig())
@@ -14,7 +15,7 @@ export const wsRouter = new Elysia()
 
             ws.subscribe(room)
             ws.publish(room, {
-                message: `${name} 进入了聊天室`,
+                message: `${name} 进入了聊天室!`,
                 name: 'notice',
                 time: Date.now(),
             })
@@ -39,12 +40,16 @@ export const wsRouter = new Elysia()
         },
         body: t.String(),
         query: t.Object({
-            room: t.String(),
-            name: t.String(),
+            room: tt.String('频道'),
+            name: tt.String('昵称'),
         }),
         response: t.Object({
-            message: t.String(),
-            name: t.String(),
-            time: t.Number(),
+            message: tt.String('消息内容'),
+            name: tt.String('发送者昵称'),
+            time: tt.Number('发送时间'),
         }),
+    })
+    .get('/send', ({ server }) => {
+        server?.publish('general', JSON.stringify({ message: 'hello', name: 'lincenying', time: new Date() }))
+        return '发送成功'
     })

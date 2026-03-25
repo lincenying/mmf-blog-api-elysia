@@ -1,8 +1,8 @@
 import type { Article, TrendingData } from '~/types/article.types'
 import type { ReqListQuery } from '~/types/global.types'
 
+import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
-import mongoose from '~/mongoose'
 import ArticleM from '../schema/article'
 import { getErrorMessage } from '../utils'
 
