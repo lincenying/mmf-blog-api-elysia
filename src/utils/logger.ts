@@ -14,11 +14,11 @@ import { config } from '~/config'
  */
 export const logger = pino({
     level: config.log.level,
-    transport: {
+    transport: config.server.nodeEnv === 'development' ? {
         target: 'pino-pretty',
         options: {
             colorize: true,
             translateTime: 'SYS:yyyy-mm-dd HH:MM:ss.l',
         },
-    },
+    } : undefined,
 })
