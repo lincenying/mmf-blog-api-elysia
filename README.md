@@ -16,8 +16,13 @@ bun build
 NODE_ENV=production bun ./dist/index.js
 
 # Build the API server with compile
-bun build:compile
-./server
+# mac
+bun build:compile:mac
+NODE_ENV=production ./server-mac
+
+# linux
+bun build:compile:linux
+NODE_ENV=production ./server-linux
 ```
 
 Add admin
@@ -61,7 +66,7 @@ docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/mongo:7.0.31 mongo
 docker build -t lincenying/bun-api-server:1.26.0319 -f ./Dockerfile .
 # 运行镜像
 docker run -d \
--p 4008:4000 \
+-p 4080:4080 \
 --name container-bun-api-server \
 lincenying/bun-api-server:1.26.0319
 # 进入容器
