@@ -8,7 +8,7 @@ import { config, secretServer as secret } from '~/config'
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
 import AdminM from '~/schema/admin'
-import { fsExistsSync, getErrorMessage, getNowTime } from '~/utils'
+import { getErrorMessage, getNowTime } from '~/utils'
 
 export class BackendUserModel {
 /**
@@ -112,38 +112,29 @@ export class BackendUserModel {
      */
     public static async insert(email: string, password: string, username: string) {
         let message = ''
-
-        if (!username || !password || !email) {
-            message = '请将表单填写完整'
-        }
-        else if (fsExistsSync('./admin.lock')) {
-            message = '请先把项目根目录的 admin.lock 文件删除'
-        }
-        else {
-            try {
-                const filter = { username }
-                const result = await AdminM.findOne(filter).lean()
-                if (result) {
-                    message = `${username}: 已经存在`
-                }
-                else {
-                    const body = {
-                        username,
-                        password: md5(config.md5_salt + password),
-                        email,
-                        creat_date: getNowTime(),
-                        update_date: getNowTime(),
-                        is_delete: 0,
-                        timestamp: getNowTime('X'),
-                    }
-                    await AdminM.create(body)
-                    fs.writeFileSync('./admin.lock', username)
-                    message = `添加用户成功: ${username}, 密码: ${password}`
-                }
+        try {
+            const filter = { username }
+            const result = await AdminM.findOne(filter).lean()
+            if (result) {
+                message = `${username}: 已经存在`
             }
-            catch (err: unknown) {
-                message = getErrorMessage(err)
+            else {
+                const body = {
+                    username,
+                    password: md5(config.md5_salt + password),
+                    email,
+                    creat_date: getNowTime(),
+                    update_date: getNowTime(),
+                    is_delete: 0,
+                    timestamp: getNowTime('X'),
+                }
+                await AdminM.create(body)
+                fs.writeFileSync('./admin.lock', username)
+                message = `添加用户成功: ${username}, 密码: ${password}`
             }
+        }
+        catch (err: unknown) {
+            message = getErrorMessage(err)
         }
         return message
     }

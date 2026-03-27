@@ -1,4 +1,5 @@
 import { BackendUserModel } from '~/models/backend-user.model'
+import { fsExistsSync } from '~/utils'
 
 export class BackendUserController {
     public static async getList(reqQuery: { page?: number, limit?: number }) {
@@ -18,6 +19,12 @@ export class BackendUserController {
     }
 
     public static async insert(email: string, password: string, username: string) {
+        if (!username || !password || !email) {
+            return '请将表单填写完整'
+        }
+        if (fsExistsSync('./admin.lock')) {
+            return '请先把项目根目录的 admin.lock 文件删除'
+        }
         return BackendUserModel.insert(email, password, username)
     }
 

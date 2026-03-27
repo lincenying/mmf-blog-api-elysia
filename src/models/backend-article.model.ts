@@ -3,7 +3,6 @@ import type { Article, ArticleInsert, ArticleModify } from '~/types/article.type
 import hljs from 'highlight.js'
 import markdownIt from 'markdown-it'
 
-import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
 import ArticleM from '~/schema/article'
 import CategoryM from '~/schema/category'
@@ -104,23 +103,17 @@ export class BackendArticleModel {
         // 从请求中提取文章ID
         const { id: _id } = reqQuery
 
-        // 检查ID是否提供
-        if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
+        try {
+            // 构建查询过滤条件
+            const filter = { _id }
+            // 尝试从数据库中查找文章
+            const result = await ArticleM.findOne(filter).lean()
+            // 查询成功，返回文章详情
+            return result
         }
-        else {
-            try {
-                // 构建查询过滤条件
-                const filter = { _id }
-                // 尝试从数据库中查找文章
-                const result = await ArticleM.findOne(filter).lean()
-                // 查询成功，返回文章详情
-                return result
-            }
-            catch (err: unknown) {
-                // 查询失败，返回错误信息
-                throw new ApiError(-200, getErrorMessage(err))
-            }
+        catch (err: unknown) {
+            // 查询失败，返回错误信息
+            throw new ApiError(-200, getErrorMessage(err))
         }
     }
 
@@ -188,10 +181,6 @@ export class BackendArticleModel {
         // 从请求中提取文章ID
         const { id: _id } = reqQuery
 
-        if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
-        }
-
         try {
             // 准备过滤条件和更新内容
             const filter = { _id }
@@ -221,10 +210,6 @@ export class BackendArticleModel {
     public static async recover(reqQuery: { id: string }) {
         // 从请求中提取文章ID
         const { id: _id } = reqQuery
-
-        if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
-        }
 
         try {
             // 构建用于查找和更新的过滤条件和更新内容
