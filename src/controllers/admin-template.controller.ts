@@ -1,6 +1,7 @@
 import Twig from 'twig'
 
 import { getTemplateDir } from '~/utils'
+
 import { BackendUserController } from './backend-user.controller'
 
 export class AdminTemplateController {
