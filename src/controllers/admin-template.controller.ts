@@ -1,7 +1,8 @@
+import type { UserInsert } from '~/schema/validation-schema'
+
 import Twig from 'twig'
 
 import { getTemplateDir } from '~/utils'
-
 import { BackendUserController } from './backend-user.controller'
 
 export class AdminTemplateController {
@@ -15,9 +16,8 @@ export class AdminTemplateController {
         return html
     }
 
-    public static async postAdminTemplate(body: { email: string, password: string, username: string }) {
-        const { email, password, username } = body
-        const message = await BackendUserController.insert(email, password, username)
+    public static async postAdminTemplate(body: UserInsert) {
+        const message = await BackendUserController.insert(body)
         const templateDir = getTemplateDir('./views/index.twig')
         const html = await new Promise<string>((resove) => {
             Twig.renderFile(templateDir, { title: '添加管理员', message }, (err, html) => {

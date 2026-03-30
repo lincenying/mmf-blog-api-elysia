@@ -1,11 +1,12 @@
+import type { OtherPage, UserInsert, UserLogin, UserModify, UserPassword } from '~/schema/validation-schema'
 import { FrontendUserModel } from '~/models/frontend-user.model'
 
 export class FrontendUserController {
-    public static async getList(reqQuery: { page?: number, limit?: number }) {
+    public static async getList(reqQuery: OtherPage) {
         return FrontendUserModel.getList(reqQuery)
     }
 
-    public static async login(reqBody: { username: string, password: string }) {
+    public static async login(reqBody: UserLogin) {
         return FrontendUserModel.login(reqBody)
     }
 
@@ -13,7 +14,7 @@ export class FrontendUserController {
         return FrontendUserModel.logout()
     }
 
-    public static async insert(reqBody: { email: string, password: string, username: string }) {
+    public static async insert(reqBody: UserInsert) {
         return FrontendUserModel.insert(reqBody)
     }
 
@@ -21,7 +22,7 @@ export class FrontendUserController {
         return FrontendUserModel.getItem(userid)
     }
 
-    public static async modify(reqBody: { id: string, email: string, password: string, username: string }) {
+    public static async modify(reqBody: UserModify) {
         return FrontendUserModel.modify(reqBody)
     }
 
@@ -29,7 +30,7 @@ export class FrontendUserController {
         return FrontendUserModel.account(reqBody, user_id)
     }
 
-    public static async password(reqBody: { old_password: string, password: string }, user_id?: string) {
+    public static async password(reqBody: UserPassword, user_id?: string) {
         return FrontendUserModel.password(reqBody, user_id)
     }
 

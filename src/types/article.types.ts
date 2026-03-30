@@ -36,25 +36,6 @@ export interface Article {
     _doc?: any
 }
 
-/**
- * 发布文章
- */
-export interface ArticleInsert {
-    category: string
-    content: string
-    title: string
-    html?: string
-}
-
-/**
- * 编辑文章
- */
-export interface ArticleModify extends ArticleInsert {
-    id: string
-    category_old: string
-    category_name: string
-}
-
 export interface TrendingData {
     category?: string
     is_delete: number

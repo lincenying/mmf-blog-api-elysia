@@ -1,9 +1,9 @@
-import type { UserModify } from '~/types/user'
+import type { UserInsert, UserModify, UserModifyForm } from '~/schema/validation-schema'
 
 import fs from 'node:fs'
 import jwt from 'jsonwebtoken'
-import md5 from 'md5'
 
+import md5 from 'md5'
 import { config, secretServer as secret } from '~/config'
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
@@ -110,7 +110,8 @@ export class BackendUserModel {
     /**
      * 初始化时添加管理员
      */
-    public static async insert(email: string, password: string, username: string) {
+    public static async insert(reqBody: UserInsert) {
+        const { username, password, email } = reqBody
         let message = ''
         try {
             const filter = { username }
@@ -142,10 +143,10 @@ export class BackendUserModel {
     /**
      * 管理员编辑
      */
-    public static async modify(reqBody: { id: string, email: string, password: string, username: string }) {
+    public static async modify(reqBody: UserModify) {
         const { id: _id, email, password, username } = reqBody
 
-        const body: UserModify = {
+        const body: UserModifyForm = {
             email,
             username,
             update_date: getNowTime(),

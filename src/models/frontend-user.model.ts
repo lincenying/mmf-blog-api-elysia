@@ -1,9 +1,9 @@
-import type { UserModify } from '~/types/user'
+import type { UserInsert, UserModify, UserModifyForm, UserPassword } from '~/schema/validation-schema'
 
 import { strLen } from '@lincy/utils'
 import jwt from 'jsonwebtoken'
-import md5 from 'md5'
 
+import md5 from 'md5'
 import { config, secretClient as secret } from '~/config'
 import { ApiError } from '~/middleware/response-wrapper'
 import UserM from '~/schema/user'
@@ -92,7 +92,7 @@ export class FrontendUserModel {
     /**
      * 用户注册
      */
-    public static async insert(reqBody: { email: string, password: string, username: string }) {
+    public static async insert(reqBody: UserInsert) {
         const { email, password, username } = reqBody
 
         if (!username || !password || !email) {
@@ -149,10 +149,10 @@ export class FrontendUserModel {
     /**
      * 用户编辑
      */
-    public static async modify(reqBody: { id: string, email: string, password: string, username: string }) {
+    public static async modify(reqBody: UserModify) {
         const { id, email, password, username } = reqBody
 
-        const body: UserModify = {
+        const body: UserModifyForm = {
             email,
             username,
             update_date: getNowTime(),
@@ -193,7 +193,7 @@ export class FrontendUserModel {
     /**
      * 密码编辑
      */
-    public static async password(reqBody: { old_password: string, password: string }, user_id?: string) {
+    public static async password(reqBody: UserPassword, user_id?: string) {
         if (!user_id) {
             throw new ApiError(201, '请先登录')
         }

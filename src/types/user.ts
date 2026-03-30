@@ -33,13 +33,3 @@ export interface UserCookies {
     useremail?: string
     [propName: string]: any
 }
-
-/**
- * 编辑用户
- */
-export interface UserModify {
-    email: string
-    username: string
-    update_date: string
-    password?: string
-}

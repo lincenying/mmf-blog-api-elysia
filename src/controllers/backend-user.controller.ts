@@ -1,8 +1,9 @@
+import type { OtherPage, UserInsert, UserLogin, UserModify } from '~/schema/validation-schema'
 import { BackendUserModel } from '~/models/backend-user.model'
 import { fsExistsSync } from '~/utils'
 
 export class BackendUserController {
-    public static async getList(reqQuery: { page?: number, limit?: number }) {
+    public static async getList(reqQuery: OtherPage) {
         return BackendUserModel.getList(reqQuery)
     }
 
@@ -10,7 +11,7 @@ export class BackendUserController {
         return BackendUserModel.getItem(reqQuery)
     }
 
-    public static async login(reqBody: { password: string, username: string }) {
+    public static async login(reqBody: UserLogin) {
         return BackendUserModel.login(reqBody)
     }
 
@@ -18,17 +19,17 @@ export class BackendUserController {
         return BackendUserModel.logout()
     }
 
-    public static async insert(email: string, password: string, username: string) {
-        if (!username || !password || !email) {
+    public static async insert(reqBody: UserInsert) {
+        if (!reqBody.username || !reqBody.password || !reqBody.email) {
             return '请将表单填写完整'
         }
         if (fsExistsSync('./admin.lock')) {
             return '请先把项目根目录的 admin.lock 文件删除'
         }
-        return BackendUserModel.insert(email, password, username)
+        return BackendUserModel.insert(reqBody)
     }
 
-    public static async modify(reqBody: { id: string, email: string, password: string, username: string }) {
+    public static async modify(reqBody: UserModify) {
         return BackendUserModel.modify(reqBody)
     }
 

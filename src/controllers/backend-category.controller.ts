@@ -1,5 +1,4 @@
-import type { CategoryInsert, CategoryModify } from '~/types/catagory.types'
-
+import type { CategoryInsert, CategoryModify } from '~/schema/validation-schema'
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
 import { BackendArticleModel } from '~/models/backend-category.model'

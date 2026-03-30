@@ -1,11 +1,11 @@
-import type { ArticleInsert, ArticleModify } from '~/types/article.types'
+import type { ArticleInsert, ArticleModify, ArticlePage } from '~/schema/validation-schema'
 
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
 import { BackendArticleModel } from '~/models/backend-article.model'
 
 export class BackendArticleController {
-    public static getList(reqQuery: { page?: string, limit?: string, sort?: string, key?: string }) {
+    public static getList(reqQuery: ArticlePage) {
         return BackendArticleModel.getList(reqQuery)
     }
 

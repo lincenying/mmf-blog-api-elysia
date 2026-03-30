@@ -19,19 +19,3 @@ export interface Category {
     /** * 发布时间戳 */
     timestamp?: number | string
 }
-
-/**
- * 添加分类
- */
-export interface CategoryInsert {
-    cate_name: string
-    cate_order: string
-}
-
-/**
- * 编辑分类
- */
-
-export interface CategoryModify extends CategoryInsert {
-    id: string
-}

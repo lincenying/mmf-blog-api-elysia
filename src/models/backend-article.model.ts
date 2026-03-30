@@ -1,14 +1,15 @@
-import type { Article, ArticleInsert, ArticleModify } from '~/types/article.types'
+import type { ArticleInsert, ArticleModify, ArticlePage } from '~/schema/validation-schema'
+import type { Article } from '~/types/article.types'
 
 import hljs from 'highlight.js'
-import markdownIt from 'markdown-it'
 
+import markdownIt from 'markdown-it'
 import { ApiError } from '~/middleware/response-wrapper'
 import ArticleM from '~/schema/article'
 import CategoryM from '~/schema/category'
 import { getErrorMessage, getNowTime } from '~/utils'
 
-interface ArticleSearch {
+interface ArticleSearchPayload {
     title?: {
         $regex: RegExp
     }
@@ -56,7 +57,7 @@ export class BackendArticleModel {
     /**
      * 获取文章列表的异步函数。
      */
-    public static async getList(reqQuery: { page?: string, limit?: string, sort?: string, key?: string }) {
+    public static async getList(reqQuery: ArticlePage) {
         // 处理查询参数，设定默认值
         const sort = reqQuery.sort || '-update_date'
         const page = Number(reqQuery.page) || 1
@@ -64,7 +65,7 @@ export class BackendArticleModel {
         const skip = (page - 1) * limit
         const key = reqQuery.key || ''
 
-        const payload: ArticleSearch = {}
+        const payload: ArticleSearchPayload = {}
 
         if (key) {
             const reg = new RegExp(key, 'i')
