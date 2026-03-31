@@ -12,6 +12,7 @@ import { adminRouter } from './routes/admin'
 import { backendRouter } from './routes/backend'
 import { frontendRouter } from './routes/frontend'
 import { jwtRouter } from './routes/jwt'
+import { proxyRouter } from './routes/proxy'
 import { sqliteRouter } from './routes/sqlite'
 import { uploadRouter } from './routes/upload'
 import { wsRouter } from './routes/ws'
@@ -44,6 +45,7 @@ const app = new Elysia({
     .use(adminRouter)
     .use(jwtRouter)
     .use(sqliteRouter)
+    .use(proxyRouter)
     .get('/favicon.ico', file('./public/favicon.ico'))
     .get('/robots.txt', file('./public/robots.txt'))
     .all('/sm/*', () => '')
