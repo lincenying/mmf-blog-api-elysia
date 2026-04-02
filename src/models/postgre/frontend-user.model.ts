@@ -54,17 +54,17 @@ export class PostgreFrontendUserModel {
         }
 
         try {
-            const result = await db.select().from(users).where(
-                and(
+            const result = await db.query.users.findFirst({
+                where: and(
                     eq(users.username, username),
                     eq(users.password, md5(config.md5_salt + password)),
                     eq(users.is_delete, 0),
                 ),
-            )
+            })
 
-            if (result && result[0]) {
+            if (result) {
                 username = encodeURI(username)
-                const { _id, email: useremail } = result[0]
+                const { _id, email: useremail } = result
 
                 const token = jwt.sign({ id: _id, username }, secret, { expiresIn: 60 * 60 * 24 * 30 })
                 return {
@@ -107,8 +107,10 @@ export class PostgreFrontendUserModel {
         }
         else {
             try {
-                const result = await db.select().from(users).where(eq(users.username, username))
-                if (result && result[0]) {
+                const result = await db.query.users.findFirst({
+                    where: eq(users.username, username),
+                })
+                if (result) {
                     throw new ApiError(201, '该用户名已经存在')
                 }
                 else {
@@ -135,14 +137,14 @@ export class PostgreFrontendUserModel {
      */
     public static async getItem(userid: string) {
         try {
-            const result = await db.select().from(users).where(
-                and(
+            const result = await db.query.users.findFirst({
+                where: and(
                     eq(users._id, userid),
                     eq(users.is_delete, 0),
                 ),
-            )
-            if (result && result[0]) {
-                return result[0]
+            })
+            if (result) {
+                return result
             }
             return '请先登录, 或者数据错误'
         }
