@@ -12,6 +12,7 @@ import { adminRouter } from './routes/admin'
 import { backendRouter } from './routes/backend'
 import { frontendRouter } from './routes/frontend'
 import { jwtRouter } from './routes/jwt'
+import { postgreRouter } from './routes/postgre'
 import { proxyRouter } from './routes/proxy'
 import { sqliteRouter } from './routes/sqlite'
 import { uploadRouter } from './routes/upload'
@@ -46,10 +47,12 @@ const app = new Elysia({
     .use(jwtRouter)
     .use(sqliteRouter)
     .use(proxyRouter)
+    .use(postgreRouter)
     .get('/favicon.ico', file('./public/favicon.ico'))
     .get('/robots.txt', file('./public/robots.txt'))
     .all('/sm/*', () => '')
-    .all('/*', () => 'Page Not Found')
+    // .all('/*', () => 'Page Not Found')
+    .all('/*', file('./dist/index.html'))
 
 if (process.env.NODE_ENV === 'development') {
     // app.use(createSwaggerConfig())
