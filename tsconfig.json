@@ -1,29 +1,7 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "jsx": "preserve",
-    "lib": ["DOM", "ESNext"],
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "paths": {
-      "~/*": ["./src/*"],
-      "@/*": ["./src/*"]
-    },
-    "resolveJsonModule": true,
-    "types": ["bun-types"],
-    "allowJs": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "noUnusedLocals": true,
-    "importHelpers": true,
-    "outDir": "dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "config/**/*", "dist/**/*", "public/**/*"],
-  "tsc-alias": {
-    "resolveFullPaths": true
-  }
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.config.json" }
+  ],
+  "files": []
 }
