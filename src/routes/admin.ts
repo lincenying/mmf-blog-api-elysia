@@ -2,7 +2,7 @@ import { html } from '@elysiajs/html'
 import { Elysia } from 'elysia'
 
 import { AdminTemplateController } from '~/controllers/admin-template.controller'
-import { validationSchema } from '~/schema/validation-schema'
+import { validationSchema } from '~/schema/elysia-schema'
 
 export const adminRouter = new Elysia({ prefix: '/backend' })
     .use(validationSchema)

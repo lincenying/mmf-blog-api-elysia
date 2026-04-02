@@ -1,4 +1,4 @@
-import type { OtherPage, UserInsert, UserLogin, UserModify } from '~/schema/validation-schema'
+import type { OtherPage, UserInsert, UserLogin, UserModify } from '~/schema/elysia-schema'
 import { BackendUserModel } from '~/models/backend-user.model'
 import { fsExistsSync } from '~/utils'
 

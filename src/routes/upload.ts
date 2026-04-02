@@ -3,7 +3,7 @@ import { Elysia, t } from 'elysia'
 import { UploadImageController } from '~/controllers/upload-image.controller'
 import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { createCorsConfig } from '~/plugins'
-import { tt } from '~/schema/validation-schema-error'
+import { tt } from '~/schema/elysia-schema-error'
 
 export const uploadRouter = new Elysia({ prefix: '/api/upload' })
     .use(createCorsConfig())

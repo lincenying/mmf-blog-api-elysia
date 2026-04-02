@@ -1,6 +1,6 @@
-import type { CategoryInsert, CategoryModify } from '~/schema/validation-schema'
+import type { CategoryInsert, CategoryModify } from '~/schema/elysia-schema'
 import { ApiError } from '~/middleware/response-wrapper'
-import CategoryM from '~/schema/category'
+import CategoryM from '~/schema/mongoose-category'
 import { getErrorMessage, getNowTime } from '~/utils'
 
 export class BackendArticleModel {

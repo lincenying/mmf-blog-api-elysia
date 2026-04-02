@@ -1,6 +1,6 @@
 import { Elysia, t } from 'elysia'
 
-import { tt } from './validation-schema-error'
+import { tt } from './elysia-schema-error'
 
 export const cookiesSchema = t.Partial(
     t.Cookie({

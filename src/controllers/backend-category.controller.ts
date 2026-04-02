@@ -1,4 +1,4 @@
-import type { CategoryInsert, CategoryModify } from '~/schema/validation-schema'
+import type { CategoryInsert, CategoryModify } from '~/schema/elysia-schema'
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
 import { BackendArticleModel } from '~/models/backend-category.model'

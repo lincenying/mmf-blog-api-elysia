@@ -6,7 +6,7 @@ import { FrontendCommentModel } from '~/models/frontend-comment.model'
 import { FrontendLikeModel } from '~/models/frontend-like.model'
 import { FrontendUserModel } from '~/models/frontend-user.model'
 import { createCorsConfig } from '~/plugins'
-import { validationSchema } from '~/schema/validation-schema'
+import { validationSchema } from '~/schema/elysia-schema'
 import { checkJWT } from '~/utils/check-jwt'
 
 export const frontendRouter = new Elysia({ prefix: '/api/frontend' })

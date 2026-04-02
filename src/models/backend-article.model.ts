@@ -1,12 +1,12 @@
-import type { ArticleInsert, ArticleModify, ArticlePage } from '~/schema/validation-schema'
+import type { ArticleInsert, ArticleModify, ArticlePage } from '~/schema/elysia-schema'
 import type { Article } from '~/types/article.types'
 
 import hljs from 'highlight.js'
 
 import markdownIt from 'markdown-it'
 import { ApiError } from '~/middleware/response-wrapper'
-import ArticleM from '~/schema/article'
-import CategoryM from '~/schema/category'
+import ArticleM from '~/schema/mongoose-article'
+import CategoryM from '~/schema/mongoose-category'
 import { getErrorMessage, getNowTime } from '~/utils'
 
 interface ArticleSearchPayload {

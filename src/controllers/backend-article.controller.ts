@@ -1,4 +1,4 @@
-import type { ArticleInsert, ArticleModify, ArticlePage } from '~/schema/validation-schema'
+import type { ArticleInsert, ArticleModify, ArticlePage } from '~/schema/elysia-schema'
 
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'

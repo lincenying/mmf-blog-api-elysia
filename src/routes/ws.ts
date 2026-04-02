@@ -2,8 +2,8 @@ import { Elysia, t } from 'elysia'
 
 import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { createCorsConfig } from '~/plugins'
-import { validationSchema } from '~/schema/validation-schema'
-import { tt } from '~/schema/validation-schema-error'
+import { validationSchema } from '~/schema/elysia-schema'
+import { tt } from '~/schema/elysia-schema-error'
 
 export const wsRouter = new Elysia()
     .use(createCorsConfig())

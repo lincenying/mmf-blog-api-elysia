@@ -1,4 +1,4 @@
-import type { OtherPage, UserInsert, UserLogin, UserModify, UserPassword } from '~/schema/validation-schema'
+import type { OtherPage, UserInsert, UserLogin, UserModify, UserPassword } from '~/schema/elysia-schema'
 import { FrontendUserModel } from '~/models/frontend-user.model'
 
 export class FrontendUserController {

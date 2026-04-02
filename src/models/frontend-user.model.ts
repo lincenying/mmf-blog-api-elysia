@@ -1,4 +1,4 @@
-import type { UserInsert, UserModify, UserModifyForm, UserPassword } from '~/schema/validation-schema'
+import type { UserInsert, UserModify, UserModifyForm, UserPassword } from '~/schema/elysia-schema'
 
 import { strLen } from '@lincy/utils'
 import jwt from 'jsonwebtoken'
@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken'
 import md5 from 'md5'
 import { config, secretClient as secret } from '~/config'
 import { ApiError } from '~/middleware/response-wrapper'
-import UserM from '~/schema/user'
+import UserM from '~/schema/mongoose-user'
 import { getErrorMessage, getNowTime } from '~/utils'
 
 export class FrontendUserModel {

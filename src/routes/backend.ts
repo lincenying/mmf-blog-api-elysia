@@ -6,7 +6,7 @@ import { BackendCategoryController } from '~/controllers/backend-category.contro
 import { BackendUserController } from '~/controllers/backend-user.controller'
 import { ApiError, responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { FrontendUserModel } from '~/models/frontend-user.model'
-import { validationSchema } from '~/schema/validation-schema'
+import { validationSchema } from '~/schema/elysia-schema'
 import { checkJWT } from '~/utils/check-jwt'
 
 export const backendRouter = new Elysia({ prefix: '/api/backend' })

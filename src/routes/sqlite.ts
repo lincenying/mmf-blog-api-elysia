@@ -3,7 +3,7 @@ import { Elysia, t } from 'elysia'
 import { ArticleController } from '~/controllers/sqlite-article.controller'
 import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { createCorsConfig } from '~/plugins'
-import { tt } from '~/schema/validation-schema-error'
+import { tt } from '~/schema/elysia-schema-error'
 
 export const sqliteRouter = new Elysia({ prefix: '/api/sqlite' })
     .use(createCorsConfig())

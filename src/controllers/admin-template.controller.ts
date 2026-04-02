@@ -1,4 +1,4 @@
-import type { UserInsert } from '~/schema/validation-schema'
+import type { UserInsert } from '~/schema/elysia-schema'
 
 import Twig from 'twig'
 

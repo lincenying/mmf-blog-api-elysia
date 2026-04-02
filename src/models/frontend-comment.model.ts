@@ -3,8 +3,8 @@ import type { ReqListQuery } from '~/types/global.types'
 
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
-import ArticleM from '~/schema/article'
-import CommentM from '~/schema/comment'
+import ArticleM from '~/schema/mongoose-article'
+import CommentM from '~/schema/mongoose-comment'
 import { getErrorMessage, getNowTime } from '~/utils'
 
 export class FrontendCommentModel {

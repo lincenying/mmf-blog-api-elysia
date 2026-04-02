@@ -1,4 +1,4 @@
-import type { UserInsert, UserModify, UserModifyForm } from '~/schema/validation-schema'
+import type { UserInsert, UserModify, UserModifyForm } from '~/schema/elysia-schema'
 
 import fs from 'node:fs'
 import jwt from 'jsonwebtoken'
@@ -7,7 +7,7 @@ import md5 from 'md5'
 import { config, secretServer as secret } from '~/config'
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/middleware/response-wrapper'
-import AdminM from '~/schema/admin'
+import AdminM from '~/schema/mongoose-admin'
 import { getErrorMessage, getNowTime } from '~/utils'
 
 export class BackendUserModel {
