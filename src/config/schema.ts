@@ -202,4 +202,20 @@ export const configSchema = {
         default: '!@#$%(*&^)',
         env: 'MD5_SALT',
     },
+
+    // 数据库配置
+    db: {
+        sqlite: {
+            doc: 'SQLite 文件路径',
+            format: String,
+            default: './.data/db.sqlite3',
+            env: 'SQLITE_DB_URL',
+        },
+        postgre: {
+            doc: 'PostgreSQL 连接串',
+            format: String,
+            default: 'postgresql://postgres:113511000@localhost:5432/mmfblog_v2',
+            env: 'POSTGRES_URL',
+        },
+    },
 }
