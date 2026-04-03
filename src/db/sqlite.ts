@@ -2,7 +2,7 @@ import Database from 'bun:sqlite'
 
 const db = new Database('./.data/db.sqlite3')
 
-db.query(`CREATE TABLE IF NOT EXISTS "article" (
+db.query(`CREATE TABLE IF NOT EXISTS "articles" (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     content TEXT,
@@ -12,6 +12,6 @@ db.query(`CREATE TABLE IF NOT EXISTS "article" (
     views INTEGER NOT NULL
 )`).run()
 
-db.query('CREATE UNIQUE INDEX IF NOT EXISTS article_id_IDX ON "article" (id)').run()
+db.query('CREATE UNIQUE INDEX IF NOT EXISTS article_id_IDX ON "articles" (id)').run()
 
 export default db

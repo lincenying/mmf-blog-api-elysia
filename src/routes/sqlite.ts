@@ -3,10 +3,12 @@ import { Elysia, t } from 'elysia'
 import { ArticleController } from '~/controllers/sqlite-article.controller'
 import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { createCorsConfig } from '~/plugins'
+import { validationSchema } from '~/schema/elysia-schema'
 import { tt } from '~/schema/elysia-schema-error'
 
 export const sqliteRouter = new Elysia({ prefix: '/api/sqlite' })
     .use(createCorsConfig())
+    .use(validationSchema)
     .use(responseWrapperMiddleware)
     .post(
         '/article/',
@@ -23,13 +25,8 @@ export const sqliteRouter = new Elysia({ prefix: '/api/sqlite' })
     )
     .get(
         '/article/',
-        ({ query }) => ArticleController.getAllArticles(query.page || 1, query.pageSize || 10), {
-            query: t.Partial(
-                t.Object({
-                    page: t.Numeric(),
-                    pageSize: t.Numeric(),
-                }),
-            ),
+        ({ query }) => ArticleController.getAllArticles(query.page || 1, query.limit || 10), {
+            query: 'other.page',
         })
     .delete(
         '/article/:id',
