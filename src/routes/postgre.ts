@@ -5,7 +5,7 @@ import { PostgreFrontendUserModel } from '~/models/postgre/frontend-user.model'
 import { createCorsConfig } from '~/plugins'
 import { validationSchema } from '~/schema/elysia-schema'
 
-export const postgreRouter = new Elysia({ prefix: '/postgre' })
+export const postgreRouter = new Elysia({ prefix: '/api/postgre' })
     .use(createCorsConfig())
     .use(validationSchema)
     .use(responseWrapperMiddleware)

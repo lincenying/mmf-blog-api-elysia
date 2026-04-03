@@ -3,7 +3,7 @@ import { integer, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { v4 as uuidv4 } from 'uuid'
 
-export const users = pgTable('users', {
+const userScheam = {
     // 主键：类似 MongoDB ObjectId 的字符串（24 位十六进制）
     _id: text('_id').primaryKey().default(uuidv4()),
     // 创建日期（格式：YYYY-MM-DD HH:MM:SS）
@@ -20,7 +20,9 @@ export const users = pgTable('users', {
     update_date: timestamp('update_date', { mode: 'string' }),
     // 用户名
     username: text('username').notNull(),
-})
+}
+
+export const users = pgTable('users', userScheam)
 
 export const insertUserSchema = createInsertSchema(users).omit({
     _id: true,
