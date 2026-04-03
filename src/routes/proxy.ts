@@ -1,7 +1,7 @@
 import Elysia, { t } from 'elysia'
 import { createCorsConfig } from '~/plugins'
 
-export const proxyRouter = new Elysia({ prefix: '/api/php' })
+export const proxyRouter = new Elysia({ prefix: '/api/proxy' })
     .use(createCorsConfig())
     .all('/*', ({ request, params, body, query }) => {
         const input = {

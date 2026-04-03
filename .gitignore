@@ -9,3 +9,4 @@ uploads/
 *-port.txt
 dist/
 /server-*
+/drizzle-*/
