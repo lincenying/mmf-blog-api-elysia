@@ -10,6 +10,7 @@ import { createStaticConfig } from './plugins'
 // import { createSwaggerConfig } from './plugins/swagger'
 import { adminRouter } from './routes/admin'
 import { backendRouter } from './routes/backend'
+import { bunSqliteRouter } from './routes/bun-sqlite'
 import { frontendRouter } from './routes/frontend'
 import { jwtRouter } from './routes/jwt'
 import { postgreRouter } from './routes/postgre'
@@ -48,6 +49,7 @@ const app = new Elysia({
     .use(sqliteRouter)
     .use(proxyRouter)
     .use(postgreRouter)
+    .use(bunSqliteRouter)
     .get('/favicon.ico', file('./public/favicon.ico'))
     .get('/robots.txt', file('./public/robots.txt'))
     .all('/sm/*', () => '')
