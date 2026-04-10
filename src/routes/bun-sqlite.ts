@@ -2,6 +2,7 @@ import { Elysia, t } from 'elysia'
 
 import { responseWrapperMiddleware } from '~/middleware/response-wrapper'
 import { SqliteFrontendArticleModel } from '~/models/sqlite/article.model'
+import { SqliteGenealogyModel } from '~/models/sqlite/genealogy.model'
 import { createCorsConfig } from '~/plugins'
 import { validationSchema } from '~/schema/elysia-schema'
 import { tt } from '~/schema/elysia-schema-error'
@@ -26,7 +27,8 @@ export const bunSqliteRouter = new Elysia({ prefix: '/api/bun-sqlite' })
         '/article/',
         ({ query }) => SqliteFrontendArticleModel.getList({ page: query.page || 1, limit: query.limit || 10 }), {
             query: 'other.page',
-        })
+        },
+    )
     .delete(
         '/article/:id',
         ({ params: { id } }) => SqliteFrontendArticleModel.deletes({ id }),
@@ -59,5 +61,10 @@ export const bunSqliteRouter = new Elysia({ prefix: '/api/bun-sqlite' })
                 author: tt.String('作者'),
                 category: tt.String('分类'),
             }),
+        },
+    )
+    .get(
+        '/genealogy/',
+        () => SqliteGenealogyModel.getList(), {
         },
     )
