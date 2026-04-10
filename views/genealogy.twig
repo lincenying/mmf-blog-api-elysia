@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>横向族谱关系图 - 搜索+悬浮备注</title>
+  <title>族谱关系图</title>
   <style>
     * {
       margin: 0;
@@ -130,21 +130,55 @@
       stroke-width: 1.5;
     }
 
-    /* 关系提示框 */
+    /* 关系提示框 - 多条堆叠样式 */
     .relation-tooltip {
       position: absolute;
-      top: 80px;
       left: 20px;
       background: rgba(0, 0, 0, 0.75);
       color: white;
       padding: 10px 16px;
       border-radius: 6px;
       font-size: 14px;
-      pointer-events: none;
+      pointer-events: all;
       z-index: 999;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       max-width: 80%;
       line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .relation-tooltip:nth-child(1) {
+      top: 0;
+    }
+    .relation-tooltip:nth-child(2) {
+      top: 50px;
+    }
+    .relation-tooltip:nth-child(3) {
+      top: 100px;
+    }
+
+    /* 提示框容器 */
+    #tooltipContainer {
+      position: absolute;
+      top: 80px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 999;
+      width: 100%;
+    }
+
+    /* 提示框内名字可点击样式 */
+    .relation-tooltip .name-link {
+      color: #4fd1c7;
+      cursor: pointer;
+      text-decoration: underline;
+      font-weight: bold;
+      margin: 0 3px;
+    }
+    .relation-tooltip .name-link:hover {
+      color: #fff;
     }
 
     /* desc 悬浮浮窗 */
@@ -189,8 +223,8 @@
     <svg id="family-tree"></svg>
   </div>
 
-  <!-- 固定关系提示框 -->
-  <div class="relation-tooltip" id="tooltip" style="display: none;"></div>
+  <!-- 多条关系提示容器 -->
+  <div id="tooltipContainer"></div>
 
   <!-- 悬浮desc提示框 -->
   <div class="desc-tooltip" id="descTooltip"></div>
@@ -213,22 +247,23 @@
     // ===================== 全局变量 =====================
     let treeData = null;
     let nodeMap = new Map();
-    let root = null;
     let svg, g, zoom;
-    let tooltip, descTooltip;
+    let descTooltip;
     let rootData;
     const NODE_WIDTH = 110;
     const NODE_HEIGHT = 45;
     const H_SPACE = 400;
     const V_SPACE = 70;
 
+    // 提示框配置：最多保留3条
+    const MAX_TOOLTIPS = 3;
+    let tooltipList = []; // 存储提示框列表
+
     // ===================== 初始化 =====================
     window.onload = async () => {
-      tooltip = document.getElementById('tooltip');
       descTooltip = document.getElementById('descTooltip');
       svg = d3.select("#family-tree");
 
-      // 回车搜索
       document.getElementById('searchInput').addEventListener('keyup', function(e) {
         if(e.key === 'Enter') searchNode();
       });
@@ -253,7 +288,6 @@
       }
     }
 
-    // 构建节点映射
     function buildNodeMap(data) {
       data.forEach(item => nodeMap.set(item.id, { ...item, children: [] }));
       nodeMap.forEach(node => {
@@ -263,7 +297,6 @@
       });
     }
 
-    // 查找根节点
     function buildTreeData() {
       for (let node of nodeMap.values()) {
         if (node.parent === 0 || !nodeMap.has(node.parent)) return node;
@@ -287,7 +320,6 @@
       rootData = d3.hierarchy(treeData);
       treeLayout(rootData);
 
-      // 连线
       g.selectAll(".link")
         .data(rootData.links())
         .enter()
@@ -295,7 +327,6 @@
         .attr("class", "link")
         .attr("d", d3.linkHorizontal().x(d=>d.y).y(d=>d.x));
 
-      // 节点组
       const nodes = g.selectAll(".node")
         .data(rootData.descendants())
         .enter()
@@ -303,10 +334,9 @@
         .attr("class", "node")
         .attr("transform", d => `translate(${d.y}, ${d.x})`)
         .on("click", (e, d) => handleClick(d.data))
-        .on("mousemove", (e, d) => showDescTooltip(e, d.data)) // 悬浮显示desc
-        .on("mouseout", hideDescTooltip); // 移开隐藏
+        .on("mousemove", (e, d) => showDescTooltip(e, d.data))
+        .on("mouseout", hideDescTooltip);
 
-      // 矩形
       nodes.append("rect")
         .attr("class", "node-rect")
         .attr("x", -NODE_WIDTH/2)
@@ -314,42 +344,37 @@
         .attr("width", NODE_WIDTH)
         .attr("height", NODE_HEIGHT);
 
-      // 文字
       nodes.append("text")
         .attr("text-anchor", "middle")
         .attr("dy", 5)
         .text(d => d.data.name);
     }
 
-    // ===================== 显示desc浮窗 =====================
+    // ===================== 悬浮desc =====================
     function showDescTooltip(e, data) {
-      // 无desc则不显示
       if (!data.desc) return;
-
       descTooltip.innerText = data.desc;
       descTooltip.style.display = "block";
-      // 鼠标右侧显示，不遮挡
       descTooltip.style.left = (e.pageX + 15) + "px";
       descTooltip.style.top = (e.pageY - 20) + "px";
     }
-
-    // 隐藏desc浮窗
     function hideDescTooltip() {
       descTooltip.style.display = "none";
     }
 
-    // ===================== 点击标记先辈 =====================
+    // ===================== 点击节点（新增多条提示） =====================
     function handleClick(clickNode) {
       d3.selectAll(".node").classed("active ancestor search-result", false);
       d3.selectAll(".node").filter(d => d.data.id === clickNode.id).classed("active", true);
+
       const ancestors = getAncestors(clickNode);
       ancestors.forEach(node => {
         d3.selectAll(".node").filter(d => d.data.id === node.id).classed("ancestor", true);
       });
-      showRelation(clickNode, ancestors);
+
+      addRelationTooltip(clickNode, ancestors);
     }
 
-    // 获取先辈
     function getAncestors(node) {
       const list = [];
       let curr = node;
@@ -360,18 +385,61 @@
       return list;
     }
 
-    // 显示关系
-    function showRelation(clickNode, ancestors) {
-      if (!ancestors.length) { tooltip.style.display = "none"; return; }
-      const levels = ["父亲", "祖父", "曾祖父", "高祖父", "天祖父", "烈祖父", "太祖父"];
-      let text = `${clickNode.name} 的先辈：`;
+    // ===================== 核心：添加多条提示框（最多3条，替换最早） =====================
+    function addRelationTooltip(clickNode, ancestors) {
+      if (!ancestors.length) return;
+
+      const levels = ["父亲", "祖父", "曾祖", "高祖", "天祖", "烈祖", "太祖", "远祖", "鼻祖"];
+      let html = `${clickNode.name} 的先辈：`;
+
       ancestors.forEach((item, i) => {
         const rel = levels[i] || `${i+1}世祖`;
-        text += ` ${item.name}（${rel}）`;
-        if (i < ancestors.length-1) text += " →";
+        html += ` <span class="name-link" onclick="jumpToNode(${item.id})">${item.name}</span>（${rel}）`;
+        if (i < ancestors.length-1) html += " →";
       });
-      tooltip.innerText = text;
-      tooltip.style.display = "block";
+
+      // 加入队列，超过3条删除第一条
+      tooltipList.push(html);
+      if (tooltipList.length > MAX_TOOLTIPS) {
+        tooltipList.shift();
+      }
+
+      renderAllTooltips();
+    }
+
+    // 重新渲染所有提示框
+    function renderAllTooltips() {
+      const container = document.getElementById('tooltipContainer');
+      container.innerHTML = '';
+
+      tooltipList.forEach(content => {
+        const div = document.createElement('div');
+        div.className = 'relation-tooltip';
+        div.innerHTML = content;
+        container.appendChild(div);
+      });
+    }
+
+    // ===================== 点击名字跳转 =====================
+    function jumpToNode(nodeId) {
+      const targetNode = rootData.descendants().find(d => d.data.id === nodeId);
+      if (!targetNode) return;
+
+      d3.selectAll('.node').classed('active ancestor search-result', false);
+      d3.selectAll('.node')
+        .filter(d => d.data.id === nodeId)
+        .classed('active', true)
+        .classed('search-result', true);
+
+      svg.transition().duration(700).call(
+        zoom.transform,
+        d3.zoomIdentity.translate(
+          window.innerWidth/2 - targetNode.y,
+          window.innerHeight/2 - targetNode.x
+        ).scale(1)
+      );
+
+      handleClick(targetNode.data);
     }
 
     // ===================== 搜索 =====================
@@ -384,7 +452,6 @@
       );
       if (!targetNode) { alert('未找到匹配的成员'); return; }
       d3.selectAll('.node').filter(d => d.data.id === targetNode.data.id).classed('search-result', true);
-      // 居中定位
       svg.transition().duration(800).call(
         zoom.transform,
         d3.zoomIdentity.translate(window.innerWidth/2 - targetNode.y, window.innerHeight/2 - targetNode.x).scale(1)
@@ -392,11 +459,12 @@
       handleClick(targetNode.data);
     }
 
-    // 清空搜索
+    // ===================== 清空 =====================
     function clearSearch() {
       document.getElementById('searchInput').value = '';
       d3.selectAll('.node').classed('active ancestor search-result', false);
-      tooltip.style.display = 'none';
+      tooltipList = [];
+      renderAllTooltips();
       svg.transition().duration(500).call(
         zoom.transform,
         d3.zoomIdentity.translate(100, window.innerHeight/2).scale(1)
