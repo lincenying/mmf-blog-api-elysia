@@ -130,31 +130,38 @@
       stroke-width: 1.5;
     }
 
-    /* 关系提示框 - 多条堆叠样式 */
+    /* 关系提示框 - 多条堆叠样式 + 关闭按钮 */
     .relation-tooltip {
-      position: absolute;
-      left: 20px;
+      position: relative; /* 让关闭按钮绝对定位 */
       background: rgba(0, 0, 0, 0.75);
       color: white;
-      padding: 10px 16px;
+      padding: 10px 30px 10px 16px; /* 右侧留出关闭按钮位置 */
       border-radius: 6px;
       font-size: 14px;
       pointer-events: all;
-      z-index: 999;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       max-width: 80%;
       line-height: 1.5;
-      margin-bottom: 8px;
     }
 
-    .relation-tooltip:nth-child(1) {
-      top: 0;
+    /* 关闭按钮样式 */
+    .tooltip-close {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+      text-align: center;
+      color: #ccc;
+      font-size: 14px;
+      cursor: pointer;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
     }
-    .relation-tooltip:nth-child(2) {
-      top: 50px;
-    }
-    .relation-tooltip:nth-child(3) {
-      top: 100px;
+    .tooltip-close:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.2);
     }
 
     /* 提示框容器 */
@@ -385,7 +392,7 @@
       return list;
     }
 
-    // ===================== 核心：添加多条提示框（最多3条，替换最早） =====================
+    // ===================== 核心：添加多条提示框（最多3条，带关闭按钮） =====================
     function addRelationTooltip(clickNode, ancestors) {
       if (!ancestors.length) return;
 
@@ -407,17 +414,26 @@
       renderAllTooltips();
     }
 
-    // 重新渲染所有提示框
+    // 重新渲染所有提示框（带关闭按钮）
     function renderAllTooltips() {
       const container = document.getElementById('tooltipContainer');
       container.innerHTML = '';
 
-      tooltipList.forEach(content => {
+      tooltipList.forEach((content, index) => {
         const div = document.createElement('div');
         div.className = 'relation-tooltip';
-        div.innerHTML = content;
+        div.innerHTML = `
+          ${content}
+          <span class="tooltip-close" onclick="closeTooltip(${index})">×</span>
+        `;
         container.appendChild(div);
       });
+    }
+
+    // ===================== 关闭单条提示框 =====================
+    function closeTooltip(index) {
+      tooltipList.splice(index, 1); // 删除对应索引的提示
+      renderAllTooltips(); // 重新渲染
     }
 
     // ===================== 点击名字跳转 =====================
