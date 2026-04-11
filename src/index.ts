@@ -15,7 +15,6 @@ import { frontendRouter } from './routes/frontend'
 import { jwtRouter } from './routes/jwt'
 import { postgreRouter } from './routes/postgre'
 import { proxyRouter } from './routes/proxy'
-import { sqliteRouter } from './routes/sqlite'
 import { uploadRouter } from './routes/upload'
 import { wsRouter } from './routes/ws'
 
@@ -46,7 +45,6 @@ const app = new Elysia({
     .use(uploadRouter)
     .use(adminRouter)
     .use(jwtRouter)
-    .use(sqliteRouter)
     .use(proxyRouter)
     .use(postgreRouter)
     .use(bunSqliteRouter)

@@ -4,7 +4,7 @@ const config = lincy({
     vue: false,
     pnpm: false,
     overrides: {
-        ignores: ['**/assets', '**/static'],
+        ignores: ['**/assets', '**/static', '**/public/global'],
     },
 })
 

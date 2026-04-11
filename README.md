@@ -23,6 +23,10 @@ NODE_ENV=production ./server-mac
 # linux
 bun build:compile:linux
 NODE_ENV=production ./server-linux
+
+# win
+bun build:compile:win
+set NODE_ENV=production ./server-win.exe
 ```
 
 Add admin

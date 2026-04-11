@@ -21,6 +21,3 @@ export const adminRouter = new Elysia({ prefix: '/backend' })
     .get('/chat', async () => {
         return await AdminTemplateController.chatTemplate()
     })
-    .get('/genealogy', async () => {
-        return await AdminTemplateController.genealogyTemplate()
-    })
