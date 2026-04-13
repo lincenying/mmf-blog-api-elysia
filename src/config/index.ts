@@ -22,7 +22,11 @@ convict.addParser({ extension: 'toml', parse: toml.parse })
 convict.addParser({ extension: ['yml', 'yaml'], parse: yaml.load })
 
 // 创建配置实例
-const configInstance = convict(configSchema)
+const configInstance = convict(configSchema, {
+    env: {
+        NODE_ENV: process.env.NODE_ENV,
+    },
+})
 
 // 获取当前环境
 const nodeEnv = configInstance.get('server.nodeEnv')
