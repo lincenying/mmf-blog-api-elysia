@@ -15,6 +15,9 @@ function escapeHtml(str) {
     })
 }
 
+const httpRe = /^https?:\/\//i
+const wsRe = /^ws:\/\//i
+
 createApp({
     setup() {
         // 响应式数据
@@ -124,7 +127,7 @@ createApp({
             }
 
             // 标准化地址
-            let cleanServer = server.replace(/^https?:\/\//i, '').replace(/^ws:\/\//i, '')
+            let cleanServer = server.replace(httpRe, '').replace(wsRe, '')
             if (cleanServer.includes('/chat')) {
                 addLocalSystem('⚠️ 服务器地址不需要包含 /chat 路径，系统会自动拼接')
                 cleanServer = cleanServer.split('/')[0]

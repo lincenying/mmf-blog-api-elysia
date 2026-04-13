@@ -1,5 +1,5 @@
 (async () => {
-    await Bun.build({
+    const result = await Bun.build({
         entrypoints: ['./src/index.ts'],
         minify: {
             whitespace: true,
@@ -12,4 +12,8 @@
             'process.env.NODE_ENV': JSON.stringify('production'),
         },
     })
+
+    if (result.success) {
+        console.log('构建成功:', result.outputs[0].path)
+    }
 })()

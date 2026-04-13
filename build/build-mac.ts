@@ -1,7 +1,5 @@
-import type { Target } from 'bun'
-
 (async () => {
-    await Bun.build({
+    const result = await Bun.build({
         entrypoints: ['./src/index.ts'],
         compile: {
             // tsconfig.json 和 package.json 默认禁用
@@ -12,15 +10,19 @@ import type { Target } from 'bun'
             autoloadDotenv: false, // 禁用 .env 加载
             autoloadBunfig: false, // 禁用 bunfig.toml 加载
             outfile: './server-mac',
+            target: 'bun-darwin-x64',
         },
         minify: {
             whitespace: true,
             syntax: true,
             identifiers: true,
         },
-        target: 'bun-darwin-x64' as Target,
         define: {
             'process.env.NODE_ENV': JSON.stringify('production'),
         },
     })
+
+    if (result.success) {
+        console.log('构建成功:', result.outputs[0].path)
+    }
 })()
