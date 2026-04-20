@@ -7,7 +7,7 @@ import { config } from '~/config'
 import { logger } from '~/utils/logger'
 import { accessLoggerMiddleware } from './middleware/access-logger'
 import { createStaticConfig } from './plugins'
-// import { createSwaggerConfig } from './plugins/swagger'
+import { createSwaggerConfig } from './plugins/swagger'
 import { adminRouter } from './routes/admin'
 import { backendRouter } from './routes/backend'
 import { bunSqliteRouter } from './routes/bun-sqlite'
@@ -55,7 +55,7 @@ const app = new Elysia({
     .all('/*', file('./dist/index.html'))
 
 if (process.env.NODE_ENV === 'development') {
-    // app.use(createSwaggerConfig())
+    app.use(createSwaggerConfig())
 }
 
 app.listen(config.server.port)
