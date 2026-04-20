@@ -73,4 +73,8 @@ md5_salt: '!@#$%(*&^)'
 # =========================================
 db:
   sqlite: ./.data/db.sqlite3
-  postgre: 'postgresql://postgres:113511000@localhost:5432/mmfblog_v2'
+  postgre_host: localhost
+  postgre_port: 5432
+  postgre_user: postgres
+  postgre_password: 113511000
+  postgre_db: mmfblog_v2
