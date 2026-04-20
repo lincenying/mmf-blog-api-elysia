@@ -116,44 +116,44 @@ frontend/
 ```typescript
 // 全局统一响应类型
 interface ApiResponse<T = any> {
-  code: number;       // 200 成功，401 未授权，500 服务器错误
-  message: string;     // 提示信息
-  data: T;             // 业务数据
+    code: number // 200 成功，401 未授权，500 服务器错误
+    message: string // 提示信息
+    data: T // 业务数据
 }
 ```
 
 ## 4.2 身份验证流程
-前端提交账号密码 → 后端校验 → 生成 JWT → 写入 HttpOnly Cookie  
-前端后续请求自动携带 Cookie，后端插件自动校验 JWT  
-登出：后端清除 Cookie，前端清空本地状态  
+前端提交账号密码 → 后端校验 → 生成 JWT → 写入 HttpOnly Cookie
+前端后续请求自动携带 Cookie，后端插件自动校验 JWT
+登出：后端清除 Cookie，前端清空本地状态
 未授权自动跳转登录页（前端路由守卫 + 后端 401 响应）
 
 ## 4.3 跨域处理
-后端通过 Elysia CORS 插件配置，允许前端域名  
+后端通过 Elysia CORS 插件配置，允许前端域名
 禁止前端使用代理解决跨域（生产环境禁用）
 
 ## 5. 环境变量与配置规范
-环境文件：.env.development / .env.production，禁止提交敏感信息到 Git  
-后端配置：数据库连接、JWT 密钥、端口仅从环境变量读取  
-前端配置：接口地址、静态资源域名从环境变量读取  
+环境文件：.env.development / .env.production，禁止提交敏感信息到 Git
+后端配置：数据库连接、JWT 密钥、端口仅从环境变量读取
+前端配置：接口地址、静态资源域名从环境变量读取
 环境变量命名：VITE_*（前端）、无前缀（后端）
 
 ## 6. Git 提交规范
 提交格式：type(scope): description
-类型：  
+类型：
 feat：新功能
 fix：修复 bug
 refactor：重构（无功能变化）
-style：格式调整  
-docs：文档修改  
+style：格式调整
+docs：文档修改
 
 示例：feat(backend): add user login api
 
 ## 7. 禁止行为（强制遵守）
-禁止后端使用 Node.js 独有 API，必须兼容 Bun  
-禁止前端直接操作 JWT Token，必须通过 Cookie 传输  
-禁止手写原生 SQL，必须使用 Drizzle ORM  
-禁止在 Vue3 中使用 Options API  
-禁止随意引入第三方依赖，需评估兼容性  
-禁止使用 any 类型，必须定义完整 TS 类型  
+禁止后端使用 Node.js 独有 API，必须兼容 Bun
+禁止前端直接操作 JWT Token，必须通过 Cookie 传输
+禁止手写原生 SQL，必须使用 Drizzle ORM
+禁止在 Vue3 中使用 Options API
+禁止随意引入第三方依赖，需评估兼容性
+禁止使用 any 类型，必须定义完整 TS 类型
 禁止业务代码写在入口文件，必须按模块拆分
