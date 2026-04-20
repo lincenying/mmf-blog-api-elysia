@@ -60,12 +60,14 @@ After the success of the administrator to add, will automatically generate the a
 
 ```bash
 # 第一次执行时, 如果相关镜像拉不下来, 可以执行以下命令:
-docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11
-docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11 oven/bun:1.3
-docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/gcr.io/distroless/base-debian13:latest
-docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/gcr.io/distroless/base-debian13:latest gcr.io/distroless/base:latest
 docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/mongo:7.0.31
 docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/mongo:7.0.31 mongo:7
+docker rmi swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/mongo:7.0.31
+
+docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11
+docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11 oven/bun:1.3
+docker rmi swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11
+
 # 构建镜像
 docker build -t lincenying/bun-api-server:1.26.0319 -f ./Dockerfile .
 # 运行镜像
@@ -93,7 +95,19 @@ volumes:
 ```
 
 ```bash
+# 预先下载镜像, 如果能正常下载docker.io下的镜像, 则无需预下载镜像
+docker pull swr.cn-east-3.myhuaweicloud.com/kubesre/docker.io/postgres:16.13-alpine3.23-linux-amd64
+docker tag swr.cn-east-3.myhuaweicloud.com/kubesre/docker.io/postgres:16.13-alpine3.23-linux-amd64 postgres:16-alpine
+docker rmi swr.cn-east-3.myhuaweicloud.com/kubesre/docker.io/postgres:16.13-alpine3.23-linux-amd64
+
+docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/mongo:7.0.31
+docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/mongo:7.0.31 mongo:7
+docker rmi swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/mongo:7.0.31
+
+docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11
+docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11 oven/bun:1.3
+docker rmi swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11
+
 # 生成镜像及启动容器
-docker-compose build
-docker-compose up -d
+chmod +x ./deploy-prod.sh && ./deploy-prod.sh
 ```
