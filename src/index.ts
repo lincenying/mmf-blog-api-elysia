@@ -62,4 +62,7 @@ app.listen(config.server.port)
 
 // 获取正确的访问信息
 logger.info(`🚀 服务器运行在 http://${app.server?.hostname}:${app.server?.port}`)
-logger.info(`📋 API文档地址: http://${app.server?.hostname}:${app.server?.port}${config.swagger.path}`)
+
+if (process.env.NODE_ENV === 'development') {
+    logger.info(`📋 API文档地址: http://${app.server?.hostname}:${app.server?.port}${config.swagger.path}`)
+}
