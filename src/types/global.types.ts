@@ -1,6 +1,15 @@
-export type ApiResponse<T = unknown>
-    = | { code: number, success: true, data: T, message?: string }
-        | { code: number, success: false, message: string }
+/**
+ * 项目规范（global-01-elysia）约定的统一响应形状；新业务可优先采用。
+ * 与下方基于 success 判别联合的 ApiResponse 并存，便于渐进迁移。
+ */
+export interface IApiResponse<T = unknown> {
+    code: number
+    message: string
+    data: T
+}
+
+/** @deprecated 请使用 IApiResponse，与 response-wrapper 输出一致 */
+export type ApiResponse<T = unknown> = IApiResponse<T>
 
 export interface ReqListQuery {
     all?: number

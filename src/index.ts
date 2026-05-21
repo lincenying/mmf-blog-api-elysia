@@ -1,24 +1,11 @@
 /* eslint-disable node/prefer-global/process */
-import { mkdir } from 'node:fs/promises'
-import { serverTiming } from '@elysiajs/server-timing'
-import { Elysia, file } from 'elysia'
+import { mkdir } from 'fs/promises'
 
+import { createApp } from '~/app'
 import { config } from '~/config'
 import { logger } from '~/utils/logger'
-import { accessLoggerMiddleware } from './middleware/access-logger'
-import { createStaticConfig } from './plugins'
-import { createSwaggerConfig } from './plugins/swagger'
-import { adminRouter } from './routes/admin'
-import { backendRouter } from './routes/backend'
-import { bunSqliteRouter } from './routes/bun-sqlite'
-import { frontendRouter } from './routes/frontend'
-import { jwtRouter } from './routes/jwt'
-import { postgreRouter } from './routes/postgre'
-import { proxyRouter } from './routes/proxy'
-import { uploadRouter } from './routes/upload'
-import { wsRouter } from './routes/ws'
 
-(async () => {
+void (async () => {
     const UPLOAD_DIR = './uploads'
     await mkdir(UPLOAD_DIR, { recursive: true })
 
@@ -31,32 +18,7 @@ import { wsRouter } from './routes/ws'
     }
 })()
 
-const app = new Elysia({
-    serve: {
-        maxRequestBodySize: 1024 * 1024 * 256, // 256MB
-    },
-})
-    .use(serverTiming())
-    .use(createStaticConfig())
-    .use(accessLoggerMiddleware)
-    .use(wsRouter)
-    .use(frontendRouter)
-    .use(backendRouter)
-    .use(uploadRouter)
-    .use(adminRouter)
-    .use(jwtRouter)
-    .use(proxyRouter)
-    .use(postgreRouter)
-    .use(bunSqliteRouter)
-    .get('/favicon.ico', file('./public/favicon.ico'))
-    .get('/robots.txt', file('./public/robots.txt'))
-    .all('/sm/*', () => '')
-    // .all('/*', () => 'Page Not Found')
-    .all('/*', file('./dist/index.html'))
-
-if (process.env.NODE_ENV === 'development') {
-    app.use(createSwaggerConfig())
-}
+const app = createApp()
 
 app.listen(config.server.port)
 

@@ -1,6 +1,6 @@
-import fs from 'node:fs'
-import path from 'node:path'
-import process from 'node:process'
+import { existsSync } from 'fs'
+import { accessSync, constants } from 'fs'
+import path from 'path'
 import dayjs from 'dayjs'
 
 /**
@@ -11,7 +11,7 @@ import dayjs from 'dayjs'
 export function fsExistsSync(path: string): boolean {
     try {
         // 尝试访问路径，检查其是否存在
-        fs.accessSync(path, fs.constants.F_OK)
+        accessSync(path, constants.F_OK)
     }
     catch (_e) {
         // 如果访问时抛出异常，则路径不存在
@@ -60,7 +60,7 @@ export function getTemplateDir(file: string) {
     const templateRoot = process.cwd()
     const fileDir = path.resolve(templateRoot, file)
     console.log(fileDir)
-    if (fs.existsSync(fileDir)) {
+    if (existsSync(fileDir)) {
         return fileDir
     }
     return path.resolve(templateRoot, `../${file}`)

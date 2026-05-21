@@ -76,5 +76,5 @@ db:
   postgre_host: host.docker.internal
   postgre_port: 5432
   postgre_user: postgres
-  postgre_password: 113511000
+  postgre_password: '113511000'
   postgre_db: mmfblog_v2

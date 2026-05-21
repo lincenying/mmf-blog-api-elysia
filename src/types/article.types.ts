@@ -33,7 +33,7 @@ export interface Article {
     likes?: string[]
     /** * 登录用户是否已点赞 */
     like_status?: boolean
-    _doc?: any
+    _doc?: Record<string, unknown>
 }
 
 export interface TrendingData {

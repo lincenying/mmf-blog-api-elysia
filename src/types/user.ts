@@ -31,5 +31,5 @@ export interface UserCookies {
     userid?: string
     username?: string
     useremail?: string
-    [propName: string]: any
+    [propName: string]: string | undefined
 }

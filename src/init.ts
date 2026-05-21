@@ -1,8 +1,8 @@
-import fs from 'node:fs'
+import { accessSync, constants, writeFileSync } from 'fs'
 
 function fsExistsSync(path: string) {
     try {
-        fs.accessSync(path, fs.constants.F_OK)
+        accessSync(path, constants.F_OK)
     }
     catch (_e) {
         return false
@@ -17,7 +17,7 @@ function creatSecret() {
             export const secretServer = '${secretServer1}'
             export const secretClient = '${secretClient1}'
         `
-        fs.writeFileSync('./src/config/_secret.js', secret1)
+        writeFileSync('./src/config/_secret.js', secret1)
         console.log('./src/config/_secret.js: 生成成功')
     }
     else {
@@ -32,7 +32,7 @@ function creatQiNiu() {
             export const secretKey = ''
             export const bucket = ''
         `
-        fs.writeFileSync('./src/config/_qiniu.js', secret)
+        writeFileSync('./src/config/_qiniu.js', secret)
         console.log('./src/config/_qiniu.js: 生成成功')
     }
     else {

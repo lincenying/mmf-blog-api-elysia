@@ -203,6 +203,16 @@ export const configSchema = {
         env: 'MD5_SALT',
     },
 
+    // JWT / Cookie 会话（密钥仍由 _secret.js 管理）
+    jwt: {
+        expiresInSeconds: {
+            doc: 'JWT 与 HttpOnly Cookie 有效期（秒）',
+            format: 'int',
+            default: 60 * 60 * 24 * 30,
+            env: 'JWT_EXPIRES_IN_SECONDS',
+        },
+    },
+
     // 数据库配置
     db: {
         sqlite: {
