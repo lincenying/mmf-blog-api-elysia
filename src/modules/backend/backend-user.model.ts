@@ -1,14 +1,15 @@
 import type { UserInsert, UserModify, UserModifyForm } from '~/schema/elysia-schema'
 
 import { writeFileSync } from 'fs'
-import jwt from 'jsonwebtoken'
 
 import md5 from 'md5'
-import { config, secretServer as secret } from '~/config'
+import { config } from '~/config'
 import mongoose from '~/db/mongoose'
 import AdminM from '~/db/schema/mongoose/admin.schema'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { getErrorMessage, getNowTime } from '~/utils'
+import { signSessionToken } from '~/utils/jwt-token'
 
 export class BackendUserModel {
 /**
@@ -37,7 +38,7 @@ export class BackendUserModel {
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -48,7 +49,7 @@ export class BackendUserModel {
         const { id: _id } = reqQuery
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
         else {
             try {
@@ -57,7 +58,7 @@ export class BackendUserModel {
                 return result
             }
             catch (err: unknown) {
-                throw new ApiError(-200, getErrorMessage(err))
+                throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
             }
         }
     }
@@ -69,7 +70,7 @@ export class BackendUserModel {
         const { password, username } = reqBody
 
         if (username === '' || password === '') {
-            throw new ApiError(201, '请输入用户名和密码')
+            throw new ApiError(API_CODE.VALIDATION, '请输入用户名和密码')
         }
         else {
             try {
@@ -82,7 +83,7 @@ export class BackendUserModel {
                 if (result) {
                     const _username = encodeURI(username)
                     const id = result.id || ''
-                    const token = jwt.sign({ id, username: _username }, secret, { expiresIn: config.jwt.expiresInSeconds })
+                    const token = signSessionToken({ id, username: _username }, 'admin')
 
                     return {
                         user: token,
@@ -91,11 +92,11 @@ export class BackendUserModel {
                     }
                 }
                 else {
-                    throw new ApiError(201, '用户名或者密码错误')
+                    throw new ApiError(API_CODE.VALIDATION, '用户名或者密码错误')
                 }
             }
             catch (err: unknown) {
-                throw new ApiError(-200, getErrorMessage(err))
+                throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
             }
         }
     }
@@ -161,7 +162,7 @@ export class BackendUserModel {
             return result
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -178,7 +179,7 @@ export class BackendUserModel {
             return '删除成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -195,7 +196,7 @@ export class BackendUserModel {
             return '恢复成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 }

@@ -1,9 +1,11 @@
-/* eslint-disable node/prefer-global/process */
 import mongoose from 'mongoose'
 
-const mongoUrl = process.env.DATABASE_URL || process.env.MONGO_URI || 'mongodb://127.0.0.1:27017'
+import { config } from '~/config'
+
+const mongoUri = `${config.db.mongo_uri}/${config.db.mongo_db}`
+
 mongoose.set('strictQuery', false)
-mongoose.connect(`${mongoUrl}/mmfblog_v2`, {})
+mongoose.connect(mongoUri, {})
 mongoose.Promise = globalThis.Promise
 
 mongoose.connection.on('error', (err) => {

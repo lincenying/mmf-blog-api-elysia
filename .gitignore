@@ -1,4 +1,7 @@
 .DS_Store
+.env
+.env.development
+.env.production
 node_modules/
 npm-debug.log
 admin.lock
@@ -9,5 +12,4 @@ uploads/
 *-port.txt
 dist/
 /server-*
-/drizzle-*/
 .cursor/rules/global*.mdc

@@ -1,9 +1,10 @@
 import type { ModifiedArticles, NewArticles } from '~/db/schema/sqlite'
 
 import { count, desc, eq } from 'drizzle-orm'
-import { db } from '~/db/bun-sqlite'
+import { sqliteDb as db } from '~/db'
 import { articles } from '~/db/schema/sqlite'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { getErrorMessage, getNowTime } from '~/utils'
 
 /**
@@ -35,7 +36,7 @@ export class SqliteArticleService {
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -46,7 +47,7 @@ export class SqliteArticleService {
         const { title, content, author, category } = reqBody
 
         if (!title || !content || !author || !category) {
-            throw new ApiError(201, '请将表单填写完整')
+            throw new ApiError(API_CODE.VALIDATION, '请将表单填写完整')
         }
         else {
             try {
@@ -61,7 +62,7 @@ export class SqliteArticleService {
                 return result
             }
             catch (err: unknown) {
-                throw new ApiError(-200, getErrorMessage(err))
+                throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
             }
         }
     }
@@ -80,7 +81,7 @@ export class SqliteArticleService {
             return '数据错误'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -100,12 +101,12 @@ export class SqliteArticleService {
         try {
             const updated = await db.update(articles).set(body).where(eq(articles.id, id!)).returning()
             if (!updated.length) {
-                throw new ApiError(201, '文章未找到')
+                throw new ApiError(API_CODE.VALIDATION, '文章未找到')
             }
             return updated[0]
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -120,7 +121,7 @@ export class SqliteArticleService {
             return '删除功能'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 }

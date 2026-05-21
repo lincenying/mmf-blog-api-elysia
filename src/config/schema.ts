@@ -251,5 +251,17 @@ export const configSchema = {
             default: 'mmfblog_v2',
             env: 'POSTGRES_DB',
         },
+        mongo_uri: {
+            doc: 'MongoDB 连接 URI（不含库名路径）',
+            format: String,
+            default: 'mongodb://127.0.0.1:27017',
+            env: 'DATABASE_URL',
+        },
+        mongo_db: {
+            doc: 'MongoDB 数据库名',
+            format: String,
+            default: 'mmfblog_v2',
+            env: 'MONGO_DB',
+        },
     },
 }

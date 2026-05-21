@@ -2,6 +2,7 @@ import type { CategoryInsert, CategoryModify } from '~/schema/elysia-schema'
 
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { BackendArticleModel } from './backend-category.model'
 
 /**
@@ -16,7 +17,7 @@ export class BackendCategoryService {
         const { id: _id } = reqQuery
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
 
         return BackendArticleModel.getItem(reqQuery)
@@ -26,7 +27,7 @@ export class BackendCategoryService {
         const { cate_name, cate_order } = reqBody
 
         if (!cate_name || !cate_order) {
-            throw new ApiError(201, '请填写分类名称和排序')
+            throw new ApiError(API_CODE.VALIDATION, '请填写分类名称和排序')
         }
 
         return BackendArticleModel.insert(reqBody)
@@ -36,7 +37,7 @@ export class BackendCategoryService {
         const { id: _id } = reqQuery
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
 
         return BackendArticleModel.deletes(reqQuery)
@@ -46,7 +47,7 @@ export class BackendCategoryService {
         const { id: _id } = reqQuery
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
 
         return BackendArticleModel.recover(reqQuery)

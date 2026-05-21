@@ -1,9 +1,10 @@
 import { Elysia } from 'elysia'
 
-import { config } from '~/config'
 import { createAdminAuthGuard, createCookieSessionApiLayer, createUserAuthGuard } from '~/plugins'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { cookieValue } from '~/utils/elysia-request'
+import { applyUserSessionCookies, clearUserSessionCookies } from '~/utils/session-cookie'
 
 import { FrontendArticleService } from './frontend-article.service'
 import { FrontendCommentService } from './frontend-comment.service'
@@ -40,25 +41,13 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
     })
     .post('/user/login', async ({ body, cookie }) => {
         const json = await FrontendUserService.login(body)
-        const { user, userid, username, useremail } = json
-        cookie.user.value = user
-        cookie.userid.value = userid
-        cookie.username.value = username
-        cookie.useremail.value = useremail
-        const maxAge = config.jwt.expiresInSeconds
-        cookie.user.maxAge = maxAge
-        cookie.userid.maxAge = maxAge
-        cookie.username.maxAge = maxAge
-        cookie.useremail.maxAge = maxAge
+        applyUserSessionCookies(cookie, json)
         return json
     }, {
         body: 'user.login',
     })
     .get('/user/logout', async ({ cookie }) => {
-        cookie.user.remove()
-        cookie.userid.remove()
-        cookie.username.remove()
-        cookie.useremail.remove()
+        clearUserSessionCookies(cookie)
         return FrontendUserService.logout()
     })
     .use(createAdminAuthGuard())
@@ -104,5 +93,5 @@ export const frontendRouter = new Elysia({ prefix: '/api/frontend' })
         query: 'id',
     })
     .all('/*', async () => {
-        throw new ApiError(404, '接口不存在')
+        throw new ApiError(API_CODE.NOT_FOUND, '接口不存在')
     })

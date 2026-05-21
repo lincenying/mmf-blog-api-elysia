@@ -1,9 +1,10 @@
 import { Elysia } from 'elysia'
 
-import { config } from '~/config'
 import { createAdminAuthGuard, createCookieSessionApiLayer } from '~/plugins'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { cookieValue, queryString } from '~/utils/elysia-request'
+import { applyAdminSessionCookies, clearAdminSessionCookies } from '~/utils/session-cookie'
 
 import { FrontendUserService } from '../frontend/frontend-user.service'
 
@@ -24,22 +25,13 @@ export const backendRouter = new Elysia({ prefix: '/api/backend' })
     })
     .post('/admin/login', async ({ body, cookie }) => {
         const json = await BackendUserService.login(body)
-        const { user, userid, username } = json
-        cookie.b_user.value = user
-        cookie.b_userid.value = userid
-        cookie.b_username.value = username
-        const maxAge = config.jwt.expiresInSeconds
-        cookie.b_user.maxAge = maxAge
-        cookie.b_userid.maxAge = maxAge
-        cookie.b_username.maxAge = maxAge
+        applyAdminSessionCookies(cookie, json)
         return json
     }, {
         body: 'user.login',
     })
     .get('/admin/logout', async ({ cookie }) => {
-        cookie.b_user.remove()
-        cookie.b_userid.remove()
-        cookie.b_username.remove()
+        clearAdminSessionCookies(cookie)
         return BackendUserService.logout()
     })
     .use(createAdminAuthGuard())
@@ -145,5 +137,5 @@ export const backendRouter = new Elysia({ prefix: '/api/backend' })
         query: 'id',
     })
     .all('/*', async () => {
-        throw new ApiError(404, '接口不存在')
+        throw new ApiError(API_CODE.NOT_FOUND, '接口不存在')
     })

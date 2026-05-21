@@ -4,6 +4,7 @@ import type { ReqListQuery } from '~/types/global.types'
 import mongoose from '~/db/mongoose'
 import ArticleM from '~/db/schema/mongoose/article.schema'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { getErrorMessage } from '~/utils'
 
 function replaceHtmlTag(html: string) {
@@ -106,7 +107,7 @@ export class FrontendArticleModel {
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -117,7 +118,7 @@ export class FrontendArticleModel {
         const { id: _id } = reqQuery
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
 
         try {
@@ -128,7 +129,7 @@ export class FrontendArticleModel {
                 ArticleM.updateOne(filter, body).exec(),
             ])
             if (!result) {
-                throw new ApiError(201, '没有找到该文章')
+                throw new ApiError(API_CODE.VALIDATION, '没有找到该文章')
             }
             else {
                 if (user_id) {
@@ -144,7 +145,7 @@ export class FrontendArticleModel {
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -177,7 +178,7 @@ export class FrontendArticleModel {
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 }

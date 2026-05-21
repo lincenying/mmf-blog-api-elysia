@@ -1,7 +1,9 @@
 import { Elysia, t } from 'elysia'
 
 import { createPublicApiLayer } from '~/plugins'
+import { ApiError } from '~/plugins/response-wrapper'
 import { tt } from '~/schema/elysia-schema-error'
+import { API_CODE } from '~/types/api-code'
 
 import { SqliteArticleService } from './bun-sqlite.service'
 
@@ -60,3 +62,6 @@ export const bunSqliteRouter = new Elysia({ prefix: '/api/bun-sqlite' })
             }),
         },
     )
+    .all('/*', () => {
+        throw new ApiError(API_CODE.NOT_FOUND, '接口不存在')
+    })

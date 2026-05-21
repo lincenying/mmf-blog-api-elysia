@@ -5,6 +5,7 @@ import mongoose from '~/db/mongoose'
 import ArticleM from '~/db/schema/mongoose/article.schema'
 import CommentM from '~/db/schema/mongoose/comment.schema'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { getErrorMessage, getNowTime } from '~/utils'
 
 export class FrontendCommentModel {
@@ -17,13 +18,13 @@ export class FrontendCommentModel {
         const creat_date = getNowTime()
         const timestamp = getNowTime('X')
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
         else if (!content) {
-            throw new ApiError(201, '请输入评论内容')
+            throw new ApiError(API_CODE.VALIDATION, '请输入评论内容')
         }
         else if (!userid) {
-            throw new ApiError(201, '请先登录')
+            throw new ApiError(API_CODE.VALIDATION, '请先登录')
         }
         else {
             const data: Comment = {
@@ -46,7 +47,7 @@ export class FrontendCommentModel {
                 return result
             }
             catch (err: unknown) {
-                throw new ApiError(-200, getErrorMessage(err))
+                throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
             }
         }
     }
@@ -60,7 +61,7 @@ export class FrontendCommentModel {
         let { limit, page } = reqQuery
 
         if (!article_id || !mongoose.Types.ObjectId.isValid(article_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
         else {
             page = Number(page) || 1
@@ -91,7 +92,7 @@ export class FrontendCommentModel {
                 }
             }
             catch (err: unknown) {
-                throw new ApiError(-200, getErrorMessage(err))
+                throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
             }
         }
     }
@@ -113,7 +114,7 @@ export class FrontendCommentModel {
             return '删除成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -134,7 +135,7 @@ export class FrontendCommentModel {
             return '恢复成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 }

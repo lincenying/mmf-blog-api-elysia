@@ -1,5 +1,24 @@
 # 变更记录
 
+## 2026-05-21 09:30:00
+
+- **JWT 工具**：`utils/jwt-token.ts` 统一 `signSessionToken` / `verifySessionToken`；`check-jwt` 改为同步布尔校验。
+- **会话 Cookie**：`utils/session-cookie.ts` 抽取登录/登出 Cookie 读写，前后台 Controller 去重。
+- **错误码**：`types/api-code.ts` 定义 `API_CODE`；Mongoose/Postgre/SQLite 等将 `-200` 改为 `SERVER_ERROR(500)`，业务校验统一 `VALIDATION(201)`。
+- **数据库**：Service 经 `~/db` 导入 `sqliteDb` / `postgreDb`；Mongo 连接改为 `config.db.mongo_uri` + `mongo_db`。
+- **路由**：`admin` POST 使用 `user.insert` Schema；postgre 增加 `login`/`logout` 与 404；bun-sqlite 增加 404。
+- **环境**：新增 `.env.development.example`；`.gitignore` 忽略 `.env*`（保留 example）。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+refactor: 集中 JWT/会话工具、统一 API_CODE 并完善配置示例
+```
+
+---
+
 ## 2026-05-21 09:05:51
 
 - **目录规范**：新增 `src/db/index.ts` 统一导出 Drizzle 实例（`sqliteDb` / `postgreDb`）。

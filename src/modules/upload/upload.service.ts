@@ -2,6 +2,7 @@ import { mkdir } from 'fs/promises'
 import { join } from 'path'
 
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 
 /**
  * 图片上传落盘业务。
@@ -13,7 +14,7 @@ export class UploadImageService {
 
         try {
             if (!file || !(file instanceof File)) {
-                throw new ApiError(201, '未上传文件或字段名称无效')
+                throw new ApiError(API_CODE.VALIDATION, '未上传文件或字段名称无效')
             }
 
             const ext = file.name.split('.').pop()
@@ -31,7 +32,7 @@ export class UploadImageService {
         }
         catch (error) {
             console.error('上传错误:', error)
-            throw new ApiError(500, '服务器内部错误')
+            throw new ApiError(API_CODE.SERVER_ERROR, '服务器内部错误')
         }
     }
 }

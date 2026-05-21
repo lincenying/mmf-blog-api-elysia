@@ -7,6 +7,7 @@ import markdownIt from 'markdown-it'
 import ArticleM from '~/db/schema/mongoose/article.schema'
 import CategoryM from '~/db/schema/mongoose/category.schema'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { getErrorMessage, getNowTime } from '~/utils'
 
 interface ArticleSearchPayload {
@@ -93,7 +94,7 @@ export class BackendArticleModel {
         }
         catch (err: unknown) {
             // 捕获异常，返回错误信息
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -114,7 +115,7 @@ export class BackendArticleModel {
         }
         catch (err: unknown) {
             // 查询失败，返回错误信息
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -171,7 +172,7 @@ export class BackendArticleModel {
         }
         catch (err: unknown) {
             // 捕获错误，返回错误响应
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -201,7 +202,7 @@ export class BackendArticleModel {
         }
         catch (err: unknown) {
             // 捕获并处理错误，返回错误响应
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -233,7 +234,7 @@ export class BackendArticleModel {
         }
         catch (err: unknown) {
             // 捕获并处理错误，构建并返回失败的响应数据
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -288,7 +289,7 @@ export class BackendArticleModel {
         }
         catch (err: unknown) {
             // 返回错误响应
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 }

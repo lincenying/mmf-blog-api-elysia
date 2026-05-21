@@ -1,6 +1,7 @@
 import mongoose from '~/db/mongoose'
 import ArticleM from '~/db/schema/mongoose/article.schema'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { getErrorMessage } from '~/utils'
 
 export class FrontendLikeModel {
@@ -9,13 +10,13 @@ export class FrontendLikeModel {
  */
     public static async like(reqQuery: { id: string }, user_id?: string) {
         if (!user_id) {
-            throw new ApiError(201, '请先登录')
+            throw new ApiError(API_CODE.VALIDATION, '请先登录')
         }
 
         const { id: article_id } = reqQuery
 
         if (!article_id || !mongoose.Types.ObjectId.isValid(article_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
 
         try {
@@ -41,7 +42,7 @@ export class FrontendLikeModel {
             return '操作成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -50,13 +51,13 @@ export class FrontendLikeModel {
      */
     public static async unlike(reqQuery: { id: string }, user_id?: string) {
         if (!user_id) {
-            throw new ApiError(201, '请先登录')
+            throw new ApiError(API_CODE.VALIDATION, '请先登录')
         }
 
         const { id: article_id } = reqQuery
 
         if (!article_id || !mongoose.Types.ObjectId.isValid(article_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
 
         try {
@@ -75,7 +76,7 @@ export class FrontendLikeModel {
             return '操作成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -95,7 +96,7 @@ export class FrontendLikeModel {
             return '操作成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 }

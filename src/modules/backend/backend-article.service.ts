@@ -2,6 +2,7 @@ import type { ArticleInsert, ArticleModify, ArticlePage } from '~/schema/elysia-
 
 import mongoose from '~/db/mongoose'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { BackendArticleModel } from './backend-article.model'
 
 /**
@@ -16,7 +17,7 @@ export class BackendArticleService {
         const { id: _id } = reqQuery
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
 
         return BackendArticleModel.getItem(reqQuery)
@@ -30,7 +31,7 @@ export class BackendArticleService {
         const { id: _id } = reqQuery
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
 
         return BackendArticleModel.deletes(reqQuery)
@@ -40,7 +41,7 @@ export class BackendArticleService {
         const { id: _id } = reqQuery
 
         if (!_id || !mongoose.Types.ObjectId.isValid(_id)) {
-            throw new ApiError(201, '参数错误')
+            throw new ApiError(API_CODE.VALIDATION, '参数错误')
         }
 
         return BackendArticleModel.recover(reqQuery)

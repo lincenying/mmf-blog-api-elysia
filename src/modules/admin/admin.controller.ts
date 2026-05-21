@@ -12,13 +12,10 @@ export const adminRouter = new Elysia({ prefix: '/backend' })
     .get('/', async () => {
         return await AdminTemplateService.getAdminTemplate()
     })
-    .post('/', async (context) => {
-        const body = context.body as {
-            username: string
-            email: string
-            password: string
-        }
+    .post('/', async ({ body }) => {
         return await AdminTemplateService.postAdminTemplate(body)
+    }, {
+        body: 'user.insert',
     })
     .get('/chat', async () => {
         return await AdminTemplateService.chatTemplate()

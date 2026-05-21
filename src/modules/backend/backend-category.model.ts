@@ -1,6 +1,7 @@
 import type { CategoryInsert, CategoryModify } from '~/schema/elysia-schema'
 import CategoryM from '~/db/schema/mongoose/category.schema'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { getErrorMessage, getNowTime } from '~/utils'
 
 export class BackendArticleModel {
@@ -15,7 +16,7 @@ export class BackendArticleModel {
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -31,7 +32,7 @@ export class BackendArticleModel {
             return result
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -55,7 +56,7 @@ export class BackendArticleModel {
             return result
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -72,7 +73,7 @@ export class BackendArticleModel {
             return '删除成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -89,7 +90,7 @@ export class BackendArticleModel {
             return '恢复成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -110,7 +111,7 @@ export class BackendArticleModel {
             return result
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 }

@@ -1,6 +1,7 @@
 import { Elysia } from 'elysia'
 
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { checkJWT } from '~/utils/check-jwt'
 import { cookieValue } from '~/utils/elysia-request'
 
@@ -17,7 +18,7 @@ export function createAdminAuthGuard() {
                 'admin',
             )
             if (!check) {
-                throw new ApiError(403, '登录验证失败')
+                throw new ApiError(API_CODE.FORBIDDEN, '登录验证失败')
             }
         },
     })
@@ -36,7 +37,7 @@ export function createUserAuthGuard() {
                 'user',
             )
             if (!check) {
-                throw new ApiError(403, '登录验证失败')
+                throw new ApiError(API_CODE.FORBIDDEN, '登录验证失败')
             }
         },
     })

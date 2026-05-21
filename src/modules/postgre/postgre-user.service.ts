@@ -3,13 +3,14 @@ import type { UserInsert, UserModify, UserModifyForm, UserPassword } from '~/sch
 import { strLen } from '@lincy/utils'
 import { and, count, desc, eq } from 'drizzle-orm'
 
-import jwt from 'jsonwebtoken'
 import md5 from 'md5'
-import { config, secretClient as secret } from '~/config'
-import { db } from '~/db/postgre-sql'
+import { config } from '~/config'
+import { postgreDb as db } from '~/db'
 import { users } from '~/db/schema/postgre'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { getErrorMessage, getNowTime } from '~/utils'
+import { signSessionToken } from '~/utils/jwt-token'
 
 /**
  * PostgreSQL 用户领域业务逻辑（Drizzle）。
@@ -40,7 +41,7 @@ export class PostgreUserService {
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -53,7 +54,7 @@ export class PostgreUserService {
         const { password } = reqBody
 
         if (username === '' || password === '') {
-            throw new ApiError(201, '请输入用户名和密码')
+            throw new ApiError(API_CODE.VALIDATION, '请输入用户名和密码')
         }
 
         try {
@@ -69,7 +70,7 @@ export class PostgreUserService {
                 username = encodeURI(username)
                 const { _id, email: useremail } = result
 
-                const token = jwt.sign({ id: _id, username }, secret, { expiresIn: config.jwt.expiresInSeconds })
+                const token = signSessionToken({ id: _id, username }, 'user')
                 return {
                     user: token,
                     userid: _id,
@@ -78,11 +79,11 @@ export class PostgreUserService {
                 }
             }
             else {
-                throw new ApiError(201, '用户名或者密码错误')
+                throw new ApiError(API_CODE.VALIDATION, '用户名或者密码错误')
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -100,13 +101,13 @@ export class PostgreUserService {
         const { email, password, username } = reqBody
 
         if (!username || !password || !email) {
-            throw new ApiError(201, '请将表单填写完整')
+            throw new ApiError(API_CODE.VALIDATION, '请将表单填写完整')
         }
         else if (strLen(username) < 4) {
-            throw new ApiError(201, '用户长度至少 2 个中文或 4 个英文')
+            throw new ApiError(API_CODE.VALIDATION, '用户长度至少 2 个中文或 4 个英文')
         }
         else if (strLen(password) < 8) {
-            throw new ApiError(201, '密码长度至少 8 位')
+            throw new ApiError(API_CODE.VALIDATION, '密码长度至少 8 位')
         }
         else {
             try {
@@ -114,7 +115,7 @@ export class PostgreUserService {
                     where: eq(users.username, username),
                 })
                 if (result) {
-                    throw new ApiError(201, '该用户名已经存在')
+                    throw new ApiError(API_CODE.VALIDATION, '该用户名已经存在')
                 }
                 else {
                     await db.insert(users).values({
@@ -130,7 +131,7 @@ export class PostgreUserService {
                 }
             }
             catch (err: unknown) {
-                throw new ApiError(-200, getErrorMessage(err))
+                throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
             }
         }
     }
@@ -152,7 +153,7 @@ export class PostgreUserService {
             return '请先登录, 或者数据错误'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -174,12 +175,12 @@ export class PostgreUserService {
         try {
             const updated = await db.update(users).set(body).where(eq(users._id, id)).returning()
             if (!updated.length) {
-                throw new ApiError(201, '用户未找到')
+                throw new ApiError(API_CODE.VALIDATION, '用户未找到')
             }
             return updated[0]
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -188,7 +189,7 @@ export class PostgreUserService {
      */
     public static async account(reqBody: { email: string }, user_id?: string) {
         if (!user_id) {
-            throw new ApiError(201, '请先登录')
+            throw new ApiError(API_CODE.VALIDATION, '请先登录')
         }
 
         const { email } = reqBody
@@ -198,7 +199,7 @@ export class PostgreUserService {
             return { email }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -207,7 +208,7 @@ export class PostgreUserService {
      */
     public static async password(reqBody: UserPassword, user_id?: string) {
         if (!user_id) {
-            throw new ApiError(201, '请先登录')
+            throw new ApiError(API_CODE.VALIDATION, '请先登录')
         }
 
         const { old_password, password } = reqBody
@@ -229,11 +230,11 @@ export class PostgreUserService {
                 return 'success'
             }
             else {
-                throw new ApiError(201, '原始密码错误')
+                throw new ApiError(API_CODE.VALIDATION, '原始密码错误')
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -251,7 +252,7 @@ export class PostgreUserService {
             return '删除功能'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -269,7 +270,7 @@ export class PostgreUserService {
             return '恢复成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 }

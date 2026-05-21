@@ -1,6 +1,8 @@
 import { Elysia } from 'elysia'
 
 import { createPublicApiLayer } from '~/plugins'
+import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 
 import { PostgreUserService } from './postgre-user.service'
 
@@ -40,4 +42,13 @@ export const postgreRouter = new Elysia({ prefix: '/api/postgre' })
         return await PostgreUserService.recover(params)
     }, {
         params: 'id',
+    })
+    .post('/users/login', async ({ body }) => {
+        return await PostgreUserService.login(body)
+    }, {
+        body: 'user.login',
+    })
+    .get('/users/logout', () => PostgreUserService.logout())
+    .all('/*', () => {
+        throw new ApiError(API_CODE.NOT_FOUND, '接口不存在')
     })

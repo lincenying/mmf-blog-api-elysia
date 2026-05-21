@@ -1,13 +1,14 @@
 import type { UserInsert, UserModify, UserModifyForm, UserPassword } from '~/schema/elysia-schema'
 
 import { strLen } from '@lincy/utils'
-import jwt from 'jsonwebtoken'
 
 import md5 from 'md5'
-import { config, secretClient as secret } from '~/config'
+import { config } from '~/config'
 import UserM from '~/db/schema/mongoose/user.schema'
 import { ApiError } from '~/plugins/response-wrapper'
+import { API_CODE } from '~/types/api-code'
 import { getErrorMessage, getNowTime } from '~/utils'
+import { signSessionToken } from '~/utils/jwt-token'
 
 export class FrontendUserModel {
 /**
@@ -37,7 +38,7 @@ export class FrontendUserModel {
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -50,7 +51,7 @@ export class FrontendUserModel {
         const { password } = reqBody
 
         if (username === '' || password === '') {
-            throw new ApiError(201, '请输入用户名和密码')
+            throw new ApiError(API_CODE.VALIDATION, '请输入用户名和密码')
         }
 
         try {
@@ -63,9 +64,9 @@ export class FrontendUserModel {
 
             if (result) {
                 username = encodeURI(username)
-                const { id, email: useremail } = result
+                const { id = '', email: useremail } = result
 
-                const token = jwt.sign({ id, username }, secret, { expiresIn: config.jwt.expiresInSeconds })
+                const token = signSessionToken({ id, username }, 'user')
                 return {
                     user: token,
                     userid: id,
@@ -74,11 +75,11 @@ export class FrontendUserModel {
                 }
             }
             else {
-                throw new ApiError(201, '用户名或者密码错误')
+                throw new ApiError(API_CODE.VALIDATION, '用户名或者密码错误')
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -96,19 +97,19 @@ export class FrontendUserModel {
         const { email, password, username } = reqBody
 
         if (!username || !password || !email) {
-            throw new ApiError(201, '请将表单填写完整')
+            throw new ApiError(API_CODE.VALIDATION, '请将表单填写完整')
         }
         else if (strLen(username) < 4) {
-            throw new ApiError(201, '用户长度至少 2 个中文或 4 个英文')
+            throw new ApiError(API_CODE.VALIDATION, '用户长度至少 2 个中文或 4 个英文')
         }
         else if (strLen(password) < 8) {
-            throw new ApiError(201, '密码长度至少 8 位')
+            throw new ApiError(API_CODE.VALIDATION, '密码长度至少 8 位')
         }
         else {
             try {
                 const result = await UserM.findOne({ username }).lean()
                 if (result) {
-                    throw new ApiError(201, '该用户名已经存在')
+                    throw new ApiError(API_CODE.VALIDATION, '该用户名已经存在')
                 }
                 else {
                     await UserM.create({
@@ -124,7 +125,7 @@ export class FrontendUserModel {
                 }
             }
             catch (err: unknown) {
-                throw new ApiError(-200, getErrorMessage(err))
+                throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
             }
         }
     }
@@ -142,7 +143,7 @@ export class FrontendUserModel {
             return '请先登录, 或者数据错误'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -167,7 +168,7 @@ export class FrontendUserModel {
             return result
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -176,7 +177,7 @@ export class FrontendUserModel {
      */
     public static async account(reqBody: { email: string }, user_id?: string) {
         if (!user_id) {
-            throw new ApiError(201, '请先登录')
+            throw new ApiError(API_CODE.VALIDATION, '请先登录')
         }
 
         const { email } = reqBody
@@ -186,7 +187,7 @@ export class FrontendUserModel {
             return { email }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -195,7 +196,7 @@ export class FrontendUserModel {
      */
     public static async password(reqBody: UserPassword, user_id?: string) {
         if (!user_id) {
-            throw new ApiError(201, '请先登录')
+            throw new ApiError(API_CODE.VALIDATION, '请先登录')
         }
 
         const { old_password, password } = reqBody
@@ -221,11 +222,11 @@ export class FrontendUserModel {
                 return 'success'
             }
             else {
-                throw new ApiError(201, '原始密码错误')
+                throw new ApiError(API_CODE.VALIDATION, '原始密码错误')
             }
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -244,7 +245,7 @@ export class FrontendUserModel {
             return '删除功能'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 
@@ -263,7 +264,7 @@ export class FrontendUserModel {
             return '恢复成功'
         }
         catch (err: unknown) {
-            throw new ApiError(-200, getErrorMessage(err))
+            throw new ApiError(API_CODE.SERVER_ERROR, getErrorMessage(err))
         }
     }
 }
