@@ -1,5 +1,19 @@
 # 变更记录
 
+## 2026-05-21 10:03:53
+
+- **文档**：重写 `README.md`，对齐当前技术栈（Bun + Elysia + MongoDB/PostgreSQL/SQLite）、快速开始、`init:config`、路由前缀、环境变量、Docker/docker-compose 与 Mongoose 版本说明；修正 `admin.lock` 文件名与端口说明（开发 4000 / 生产 4080）。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+docs: 重写 README 对齐项目结构与部署说明
+```
+
+---
+
 ## 2026-05-21 09:30:00
 
 - **JWT 工具**：`utils/jwt-token.ts` 统一 `signSessionToken` / `verifySessionToken`；`check-jwt` 改为同步布尔校验。
