@@ -1,5 +1,20 @@
 # 变更记录
 
+## 2026-05-21 11:37:09
+
+- **修复**：`backend-article` 的 `deletes` / `recover` / `modify` 先校验 `findOneAndUpdate` 结果，文章不存在时抛出校验错误，再按 `result.category` 更新分类 `cate_num`（不再误用文章 `_id` 更新分类）。
+- **修复**：`recover` 将 `is_delete` 更正为 `0`（恢复未删除状态），并统一使用 `{ new: true }` 返回更新后文档。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+fix: 文章删除/恢复/修改前先校验更新结果再改分类计数
+```
+
+---
+
 ## 2026-05-21 11:05:12
 
 - **架构**：合并 `src/modules` 下 7 对 `*.model.ts` 与 `*.service.ts`，统一为 `Controller → Service → DB` 分层；删除冗余透传层。

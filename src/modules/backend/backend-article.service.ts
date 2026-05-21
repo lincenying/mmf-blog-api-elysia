@@ -175,12 +175,13 @@ export class BackendArticleService {
             const body = { is_delete: 1 }
             const result = await ArticleM.findOneAndUpdate(filter, body, { new: true }).exec()
 
-            const categoryBody = {
-                $inc: {
-                    cate_num: -1,
-                },
+            if (!result) {
+                throw new ApiError(API_CODE.VALIDATION, '文章不存在')
             }
-            await CategoryM.updateOne(filter, categoryBody).exec()
+
+            const categoryFilter = { _id: result.category }
+            const categoryBody = { $inc: { cate_num: -1 } }
+            await CategoryM.updateOne(categoryFilter, categoryBody).exec()
             return result
         }
         catch (err: unknown) {
@@ -200,16 +201,17 @@ export class BackendArticleService {
 
         try {
             const filter = { _id }
-            const body = { is_delete: 1 }
+            const body = { is_delete: 0 }
 
-            const result = await ArticleM.findOneAndUpdate(filter, body).exec()
+            const result = await ArticleM.findOneAndUpdate(filter, body, { new: true }).exec()
 
-            const categoryBody = {
-                $inc: {
-                    cate_num: 1,
-                },
+            if (!result) {
+                throw new ApiError(API_CODE.VALIDATION, '文章不存在')
             }
-            await CategoryM.updateOne(filter, categoryBody).exec()
+
+            const categoryFilter = { _id: result.category }
+            const categoryBody = { $inc: { cate_num: 1 } }
+            await CategoryM.updateOne(categoryFilter, categoryBody).exec()
 
             return result
         }
@@ -247,7 +249,12 @@ export class BackendArticleService {
                 update_date: getNowTime(),
             }
             const result = await ArticleM.findOneAndUpdate(filter, body, { new: true }).exec().then(data => data?.toObject())
-            if (result && category !== category_old) {
+
+            if (!result) {
+                throw new ApiError(API_CODE.VALIDATION, '文章不存在')
+            }
+
+            if (category !== category_old) {
                 const newCategofyFilter = { _id: category }
                 const oldCategoryFilter = { _id: category_old }
                 const newCategoryBody = { $inc: { cate_num: 1 } }
