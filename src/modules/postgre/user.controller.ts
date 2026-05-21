@@ -4,7 +4,7 @@ import { createPublicApiLayer } from '~/plugins'
 import { ApiError } from '~/plugins/response-wrapper'
 import { API_CODE } from '~/types/api-code'
 
-import { PostgreUserService } from './postgre-user.service'
+import { PostgreUserService } from './user.service'
 
 /** PostgreSQL（Drizzle）示例用户 REST 插件。 */
 export const postgreRouter = new Elysia({ prefix: '/api/postgre' })

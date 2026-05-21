@@ -5,7 +5,7 @@ import { ApiError } from '~/plugins/response-wrapper'
 import { tt } from '~/schema/elysia-schema-error'
 import { API_CODE } from '~/types/api-code'
 
-import { SqliteArticleService } from './bun-sqlite.service'
+import { SqliteArticleService } from './article.service'
 
 /** BunSQLite 文章示例 REST 插件。 */
 export const bunSqliteRouter = new Elysia({ prefix: '/api/bun-sqlite' })
