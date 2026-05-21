@@ -1,5 +1,20 @@
 # 变更记录
 
+## 2026-05-21 11:05:12
+
+- **架构**：合并 `src/modules` 下 7 对 `*.model.ts` 与 `*.service.ts`，统一为 `Controller → Service → DB` 分层；删除冗余透传层。
+- **修复**：`backend-category` 原 model 类名误写为 `BackendArticleModel`，合并后更正为 `BackendCategoryService`。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+refactor: 合并 modules 中 model 与 service 层
+```
+
+---
+
 ## 2026-05-21 10:03:53
 
 - **文档**：重写 `README.md`，对齐当前技术栈（Bun + Elysia + MongoDB/PostgreSQL/SQLite）、快速开始、`init:config`、路由前缀、环境变量、Docker/docker-compose 与 Mongoose 版本说明；修正 `admin.lock` 文件名与端口说明（开发 4000 / 生产 4080）。
