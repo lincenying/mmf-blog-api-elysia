@@ -1,5 +1,51 @@
 # 变更记录
 
+## 2026-06-19 22:45:00
+
+- **修复**：`ensure-postgres-db.ts` 建库改用 `TEMPLATE template0`，避免 `template1` 被占用时报错 `55006`。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+fix: PostgreSQL 建库改用 template0 避免会话冲突
+```
+
+---
+
+## 2026-06-19 22:40:00
+
+- **修复**：迁移前通过 `ensure-postgres-db.ts` 自动创建缺失的 PostgreSQL 数据库 `mmfblog_v2`。
+- **修复**：`db:postgre:migrate` 改为执行 `src/db/migrate.ts`，统一建库与迁移并输出完整错误。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+fix: 迁移前自动创建缺失的 PostgreSQL 数据库
+```
+
+---
+
+## 2026-06-19 22:35:00
+
+- **修复**：PostgreSQL `users._id` 由 `.default(uuidv4())` 改为 `.$defaultFn(() => uuidv4())`，避免模块加载时固定 UUID 及 drizzle-kit 生成错误迁移。
+- **修复**：删除错误的 `drizzle-postgre/0001_slim_night_thrasher.sql`（将 `_id` 设为静态默认值）。
+- **修复**：`entrypoint-api.sh` 启动时仅执行 `db:postgre:migrate`，不再每次 `generate`。
+- **修复**：`src/db/migrate.ts` 改用 `node-postgres` migrator 并输出完整错误信息。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+fix: 修复 PostgreSQL 迁移因静态 UUID 默认值失败的问题
+```
+
+---
+
 ## 2026-05-21 11:37:09
 
 - **修复**：`backend-article` 的 `deletes` / `recover` / `modify` 先校验 `findOneAndUpdate` 结果，文章不存在时抛出校验错误，再按 `result.category` 更新分类 `cate_num`（不再误用文章 `_id` 更新分类）。

@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 const userSchema = {
     // 主键：类似 MongoDB ObjectId 的字符串（24 位十六进制）
-    _id: text('_id').primaryKey().default(uuidv4()),
+    _id: text('_id').primaryKey().$defaultFn(() => uuidv4()),
     // 创建日期（格式：YYYY-MM-DD HH:MM:SS）
     creat_date: timestamp('creat_date', { mode: 'string' }),
     // 邮箱地址

@@ -1,8 +1,19 @@
-import { migrate as migratePg } from 'drizzle-orm/postgres-js/migrator'
-import { db } from './postgre-sql'
+import process from 'node:process'
+import { migrate as migratePg } from 'drizzle-orm/node-postgres/migrator'
+import { ensurePostgresDatabase } from './ensure-postgres-db'
+import { db, pool } from './postgre-sql'
 
 (async () => {
-    await migratePg(db as never, { migrationsFolder: './drizzle-postgre' })
+    try {
+        await ensurePostgresDatabase()
+        await migratePg(db, { migrationsFolder: './drizzle-postgre' })
+        console.log('PostgreSQL migrations applied.')
+    }
+    catch (err) {
+        console.error('PostgreSQL migration failed:', err)
+        process.exit(1)
+    }
+    finally {
+        await pool.end()
+    }
 })()
-
-console.log('Migrations applied.')

@@ -3,7 +3,7 @@ import { Pool } from 'pg'
 import { config } from '~/config'
 import * as schema from '~/db/schema/postgre'
 
-const pool = new Pool({
+export const pool = new Pool({
     connectionString: `postgresql://${config.db.postgre_user}:${config.db.postgre_password}@${config.db.postgre_host}:${config.db.postgre_port}/${config.db.postgre_db}`,
 })
 
