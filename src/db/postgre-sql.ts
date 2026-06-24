@@ -3,8 +3,10 @@ import { Pool } from 'pg'
 import { config } from '~/config'
 import * as schema from '~/db/schema/postgre'
 
+const { postgre_user, postgre_password, postgre_host, postgre_port, postgre_db } = config.db
+
 export const pool = new Pool({
-    connectionString: `postgresql://${config.db.postgre_user}:${config.db.postgre_password}@${config.db.postgre_host}:${config.db.postgre_port}/${config.db.postgre_db}`,
+    connectionString: `postgresql://${postgre_user}:${postgre_password}@${postgre_host}:${postgre_port}/${postgre_db}`,
 })
 
 export const db = drizzle(pool, { schema })
