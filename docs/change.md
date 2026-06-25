@@ -1,5 +1,38 @@
 # 变更记录
 
+## 2026-06-25 11:08:00
+
+- **测试**：移除全部 `vi.mock`，改为连接真实 MongoDB（`config/test.yaml`）运行接口测试。
+- **测试**：新增 `tests/helpers/test-data.ts`，自动 upsert 专用账号 `__vitest_admin__` / `__vitest_user__`，并读取库内文章、分类数据。
+- **测试**：登录鉴权通过真实登录接口校验密码，Cookie 使用 MongoDB `_id` 签发；评论测试后自动清理标记数据。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+test: 移除 vi.mock 改用 MongoDB 真实数据测试
+```
+
+---
+
+## 2026-06-25 11:04:00
+
+- **测试**：引入 Vitest 作为单元测试框架，新增 `vitest.config.ts` 与 `tests/setup.ts`（全局 mock Mongoose，避免连接真实数据库）。
+- **测试**：新增接口测试辅助工具 `tests/helpers/`（`api-client`、`test-app`、`session-cookie`）。
+- **测试**：覆盖 JWT、前台、后台、鉴权守卫及 `checkJWT` 工具函数，共 19 个用例；Service 层通过 `vi.mock` 隔离，不依赖 MongoDB。
+- **脚本**：`package.json` 新增 `test`（单次运行）与 `test:watch`（监听模式）。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+test: 使用 Vitest 添加接口单元测试
+```
+
+---
+
 ## 2026-06-25 12:00:00
 
 - **重构**：移除 PostgreSQL / BunSQLite（Drizzle ORM）全套示例代码与依赖，统一以 MongoDB（Mongoose）为唯一数据存储。
