@@ -1,5 +1,5 @@
 import mongoose from '~/db/mongoose'
-import ArticleM from '~/db/schema/mongoose/article.schema'
+import ArticleM from '~/db/schema/article.schema'
 import { ApiError } from '~/plugins/response-wrapper'
 import { API_CODE } from '~/types/api-code'
 import { getErrorMessage } from '~/utils'

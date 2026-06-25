@@ -70,12 +70,8 @@ static:
 md5_salt: '!@#$%(*&^)'
 
 # =========================================
-# 数据库配置
+# 数据库配置（MongoDB）
 # =========================================
 db:
-  sqlite: ./.data/db.sqlite3
-  postgre_host: host.docker.internal
-  postgre_port: 5432
-  postgre_user: postgres
-  postgre_password: '113511000'
-  postgre_db: mmfblog_v2
+  mongo_uri: mongodb://api_mongo:27017
+  mongo_db: mmfblog_v2

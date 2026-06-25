@@ -8,9 +8,7 @@
 | --- | --- |
 | 运行时 | Bun |
 | Web 框架 | Elysia.js |
-| 主数据存储 | MongoDB（Mongoose） |
-| 关系型存储 | PostgreSQL（Drizzle ORM，生产） |
-| 本地存储 | BunSQLite（Drizzle ORM，开发） |
+| 数据存储 | MongoDB（Mongoose） |
 | 身份验证 | JWT + HttpOnly Cookie |
 | 配置 | Convict（YAML + 环境变量） |
 | 模板 | Twig |
@@ -22,15 +20,13 @@
 - **后台 API**（`/api/backend`）：分类、文章、用户、管理员登录（Cookie 会话）
 - **管理员初始化**（`/backend`）：Twig 页面首次创建管理员
 - **上传**（`/api/upload`）、**代理**（`/api/proxy`）、**JWT 示例**（`/api/jwt`）
-- **PostgreSQL 示例**（`/api/postgre`）、**BunSQLite 示例**（`/api/bun-sqlite`）
 - **WebSocket**（`/chat`）：聊天室
 - **开发环境 Swagger**：`http://localhost:4000/docs`（仅 `NODE_ENV=development`）
 
 ## 环境要求
 
 - [Bun](https://bun.sh) ≥ 1.3（与 `package.json` 中 `bun-types` 对齐）
-- **MongoDB**（必需，博客主数据）
-- **PostgreSQL**（可选，使用 `/api/postgre` 或 Docker 生产栈时需启用）
+- **MongoDB**（博客主数据）
 - 前端开发时按需配置 CORS 源（见 `.env.development.example`）
 
 ## 快速开始
@@ -68,7 +64,6 @@ cp .env.development.example .env.development
 | `PORT` | 监听端口 | 开发 `4000`，生产配置 `4080` |
 | `DATABASE_URL` | MongoDB URI | `mongodb://127.0.0.1:27017` |
 | `MONGO_DB` | MongoDB 库名 | `mmfblog_v2` |
-| `SQLITE_DB_URL` | SQLite 文件路径 | `./.data/db.sqlite3` |
 | `CORS_ORIGIN` | 允许的前端源，逗号分隔 | 见 example 文件 |
 | `JWT_EXPIRES_IN_SECONDS` | Cookie / JWT 有效期（秒） | `2592000` |
 
@@ -110,12 +105,6 @@ NODE_ENV=production bun run start
 bun run build:compile:mac    # → ./server-mac
 bun run build:compile:linux  # → ./server-linux
 bun run build:compile:win    # → ./server-win.exe
-
-# Drizzle 迁移
-bun run db:sqlite:generate
-bun run db:sqlite:migrate
-bun run db:postgre:generate
-bun run db:postgre:migrate
 ```
 
 ## API 路由前缀
@@ -127,8 +116,6 @@ bun run db:postgre:migrate
 | `/backend` | 管理员初始化 Twig 页面 |
 | `/api/upload` | 文件上传 |
 | `/api/jwt` | JWT 示例 |
-| `/api/postgre` | PostgreSQL + Drizzle 示例 |
-| `/api/bun-sqlite` | BunSQLite + Drizzle 示例 |
 | `/api/proxy` | 代理转发 |
 | `/chat` | WebSocket 聊天 |
 | `/public` | 静态资源（见 `config/*.yaml` 中 `static.prefix`） |
@@ -153,8 +140,10 @@ interface IApiResponse<T = unknown> {
 │   ├── app.ts              # 组装 Elysia 应用与路由
 │   ├── index.ts            # 启动入口
 │   ├── config/             # Convict 配置与密钥
-│   ├── db/                 # Drizzle / Mongoose 连接与 schema
-│   ├── modules/            # 业务模块（controller / service / model）
+│   ├── db/
+│   │   ├── mongoose.ts     # MongoDB 连接
+│   │   └── schema/mongoose/  # Mongoose Model 定义
+│   ├── modules/            # 业务模块（controller / service）
 │   ├── plugins/            # CORS、鉴权、Swagger、响应包装等
 │   ├── schema/             # Elysia 请求校验 Schema
 │   ├── types/              # 共享类型
@@ -162,8 +151,6 @@ interface IApiResponse<T = unknown> {
 ├── config/                 # development.yaml / production.yaml
 ├── views/                  # Twig 模板
 ├── public/                 # 静态资源
-├── drizzle-postgre/        # PostgreSQL 迁移
-├── drizzle-sqlite/         # SQLite 迁移
 ├── build/                  # 构建脚本
 ├── Dockerfile
 ├── docker-compose.yml
@@ -200,7 +187,7 @@ docker run -d \
 
 镜像内默认 `NODE_ENV=production`，监听 **4080**（见 `config/production.yaml`）。
 
-### docker-compose（API + MongoDB + PostgreSQL）
+### docker-compose（API + MongoDB）
 
 1. 修改 `docker-compose.yml` 中 `api_mongo.volumes`，将宿主机 MongoDB 数据目录映射到容器（示例路径请改为你本机路径）：
 
@@ -211,7 +198,7 @@ volumes:
 
 2. 准备 `.env`（可参考 `.env.development.example`，生产勿提交密钥）。
 
-3. 一键构建并启动（会先等待 PostgreSQL，再执行 Drizzle 迁移）：
+3. 一键构建并启动：
 
 ```bash
 chmod +x ./deploy-prod.sh && ./deploy-prod.sh
@@ -236,15 +223,12 @@ docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/mongo:7.0.31 mongo
 
 docker pull swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11
 docker tag swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/oven/bun:1.3.11 oven/bun:1.3
-
-docker pull swr.cn-east-3.myhuaweicloud.com/kubesre/docker.io/postgres:16.13-alpine3.23-linux-amd64
-docker tag swr.cn-east-3.myhuaweicloud.com/kubesre/docker.io/postgres:16.13-alpine3.23-linux-amd64 postgres:16-alpine
 ```
 
 ## 开发说明
 
 - 分层：`Controller → Service → DB`，业务逻辑勿写在 `index.ts` / `app.ts`。
-- 数据库写操作统一走 Drizzle / Mongoose，禁止手写原生 SQL。
+- 数据库写操作统一走 Mongoose，禁止手写原生 SQL。
 - 修改 `views/*.twig` 时开发模式会触发 Bun 监听重启（见 `src/index.ts`）。
 - 敏感文件：`.env*`、`_secret.js`、`_qiniu.js`、`admin.lock` 均已忽略，请勿提交。
 

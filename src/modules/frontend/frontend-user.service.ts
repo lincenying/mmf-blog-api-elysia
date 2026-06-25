@@ -4,7 +4,7 @@ import { strLen } from '@lincy/utils'
 
 import md5 from 'md5'
 import { config } from '~/config'
-import UserM from '~/db/schema/mongoose/user.schema'
+import UserM from '~/db/schema/user.schema'
 import { ApiError } from '~/plugins/response-wrapper'
 import { API_CODE } from '~/types/api-code'
 import { getErrorMessage, getNowTime } from '~/utils'

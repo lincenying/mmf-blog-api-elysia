@@ -1,7 +1,7 @@
 import type { CategoryInsert, CategoryModify } from '~/schema/elysia-schema'
 
 import mongoose from '~/db/mongoose'
-import CategoryM from '~/db/schema/mongoose/category.schema'
+import CategoryM from '~/db/schema/category.schema'
 import { ApiError } from '~/plugins/response-wrapper'
 import { API_CODE } from '~/types/api-code'
 import { getErrorMessage, getNowTime } from '~/utils'

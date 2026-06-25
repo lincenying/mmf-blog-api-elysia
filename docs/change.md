@@ -1,5 +1,24 @@
 # 变更记录
 
+## 2026-06-25 12:00:00
+
+- **重构**：移除 PostgreSQL / BunSQLite（Drizzle ORM）全套示例代码与依赖，统一以 MongoDB（Mongoose）为唯一数据存储。
+- **删除**：`src/modules/postgre/`、`src/modules/bun-sqlite/`、`src/db/schema/postgre/`、`src/db/schema/sqlite/`、`drizzle-postgre/`、`drizzle-sqlite/`、`drizzle.config.ts`、`drizzle-sqlite.config.ts`、`entrypoint-api.sh` 及 Drizzle 连接/迁移脚本。
+- **删除**：孤儿文件 `src/db/schema/mongoose/template.schema.ts`、`src/db/index.ts`（仅聚合 Drizzle 实例）。
+- **优化**：`src/db/` 仅保留 `mongoose.ts` 与 `schema/mongoose/`；`docker-compose.yml` 移除 `api_postgres` 服务；`Dockerfile` 移除迁移步骤与 `.data` 拷贝；`deploy-prod.sh` 简化为 API + MongoDB 一键部署。
+- **配置**：`config/*.yaml`、`.env.development.example`、`src/config/schema.ts` 仅保留 MongoDB 相关项；`package.json` 移除 `drizzle-*`、`pg` 依赖与 `db:*` 脚本。
+- **文档**：更新 `README.md` 技术栈、路由表与项目结构说明。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+refactor: 移除 PostgreSQL/SQLite 示例栈并精简项目结构
+```
+
+---
+
 ## 2026-06-19 22:45:00
 
 - **修复**：`ensure-postgres-db.ts` 建库改用 `TEMPLATE template0`，避免 `template1` 被占用时报错 `55006`。

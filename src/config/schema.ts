@@ -213,44 +213,8 @@ export const configSchema = {
         },
     },
 
-    // 数据库配置
+    // 数据库配置（MongoDB）
     db: {
-        sqlite: {
-            doc: 'SQLite 文件路径',
-            format: String,
-            default: './.data/db.sqlite3',
-            env: 'SQLITE_DB_URL',
-        },
-        postgre_host: {
-            doc: 'PostgreSQL 主机',
-            format: String,
-            default: 'localhost',
-            env: 'POSTGRES_HOST',
-        },
-        postgre_port: {
-            doc: 'PostgreSQL 端口',
-            format: 'port',
-            default: 5432,
-            env: 'POSTGRES_PORT',
-        },
-        postgre_user: {
-            doc: 'PostgreSQL 用户',
-            format: String,
-            default: 'postgres',
-            env: 'POSTGRES_USER',
-        },
-        postgre_password: {
-            doc: 'PostgreSQL 密码',
-            format: String,
-            default: '113511000',
-            env: 'POSTGRES_PASSWORD',
-        },
-        postgre_db: {
-            doc: 'PostgreSQL 数据库',
-            format: String,
-            default: 'mmfblog_v2',
-            env: 'POSTGRES_DB',
-        },
         mongo_uri: {
             doc: 'MongoDB 连接 URI（不含库名路径）',
             format: String,

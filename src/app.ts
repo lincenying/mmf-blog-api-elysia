@@ -5,10 +5,8 @@ import { Elysia, file } from 'elysia'
 import {
     adminRouter,
     backendRouter,
-    bunSqliteRouter,
     frontendRouter,
     jwtRouter,
-    postgreRouter,
     proxyRouter,
     uploadRouter,
     wsRouter,
@@ -37,8 +35,6 @@ export function createApp() {
         .use(adminRouter)
         .use(jwtRouter)
         .use(proxyRouter)
-        .use(postgreRouter)
-        .use(bunSqliteRouter)
         .get('/favicon.ico', file('./public/favicon.ico'))
         .get('/robots.txt', file('./public/robots.txt'))
         .all('/sm/*', () => '')
