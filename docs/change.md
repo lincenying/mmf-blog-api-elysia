@@ -1,5 +1,20 @@
 # 变更记录
 
+## 2026-06-25 12:00:00
+
+- **测试**：`tests/helpers/api-client.ts`、`tests/helpers/test-app.ts` 将 `Elysia` 参数类型改为官方 `AnyElysia`，修复带路由前缀的 router 传入时的 TS 泛型不兼容。
+- **测试**：`tests/helpers/test-data.ts` 对 `findOneAndUpdate` 返回值增加空值校验。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+fix: 修复测试辅助函数 Elysia 类型不兼容
+```
+
+---
+
 ## 2026-06-25 11:08:00
 
 - **测试**：移除全部 `vi.mock`，改为连接真实 MongoDB（`config/test.yaml`）运行接口测试。

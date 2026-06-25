@@ -75,6 +75,10 @@ async function upsertTestAccount(
         { upsert: true, returnDocument: 'after', lean: true },
     )
 
+    if (!doc) {
+        throw new Error(`Failed to upsert test user: ${username}`)
+    }
+
     return {
         id: doc._id.toString(),
         username,

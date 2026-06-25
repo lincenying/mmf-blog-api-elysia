@@ -4,13 +4,13 @@ import { frontendRouter } from '~/modules/frontend/frontend.controller'
 import { API_CODE } from '~/types/api-code'
 
 import { requestApp } from './helpers/api-client'
+import { createTestApp } from './helpers/test-app'
 import {
     cleanupVitestComments,
     getTestFixtures,
     loginUserViaApi,
     TEST_COMMENT_MARKER,
 } from './helpers/test-data'
-import { createTestApp } from './helpers/test-app'
 
 const frontendApp = createTestApp(frontendRouter)
 
@@ -25,7 +25,7 @@ describe('前台接口 /api/frontend', () => {
         await cleanupVitestComments(fixtures.article.id, fixtures.user.id)
     })
 
-    it('GET /trending 返回热门文章', async () => {
+    it('get /trending 返回热门文章', async () => {
         const { json } = await requestApp<{ list: Array<{ _id: string, title: string }> }>(frontendApp, {
             path: '/api/frontend/trending',
         })
@@ -36,7 +36,7 @@ describe('前台接口 /api/frontend', () => {
         expect(json.data!.list[0]).toHaveProperty('title')
     })
 
-    it('POST /user/login 登录成功并返回用户信息', async () => {
+    it('post /user/login 登录成功并返回用户信息', async () => {
         const fixtures = await getTestFixtures()
 
         const { json } = await requestApp<{ user: string, userid: string, username: string }>(frontendApp, {
@@ -53,7 +53,7 @@ describe('前台接口 /api/frontend', () => {
         expect(typeof json.data?.user).toBe('string')
     })
 
-    it('GET /user/logout 返回登出结果', async () => {
+    it('get /user/logout 返回登出结果', async () => {
         const fixtures = await getTestFixtures()
         const userCookie = await loginUserViaApi(
             options => requestApp(frontendApp, options),
@@ -69,7 +69,7 @@ describe('前台接口 /api/frontend', () => {
         expect(json.data).toBe('退出成功')
     })
 
-    it('POST /comment/insert 登录后可提交评论', async () => {
+    it('post /comment/insert 登录后可提交评论', async () => {
         const fixtures = await getTestFixtures()
         const userCookie = await loginUserViaApi(
             options => requestApp(frontendApp, options),
@@ -91,7 +91,7 @@ describe('前台接口 /api/frontend', () => {
         expect(json.data?.article_id).toBe(fixtures.article.id)
     })
 
-    it('POST /user/login 缺少必填字段时返回校验错误', async () => {
+    it('post /user/login 缺少必填字段时返回校验错误', async () => {
         const { json } = await requestApp<null>(frontendApp, {
             method: 'POST',
             path: '/api/frontend/user/login',

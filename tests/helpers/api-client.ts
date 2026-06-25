@@ -1,4 +1,4 @@
-import type { Elysia } from 'elysia'
+import type { AnyElysia } from 'elysia'
 import type { IApiResponse } from '~/types/global.types'
 
 export interface IRequestOptions {
@@ -20,7 +20,7 @@ export interface IAppResponse<T> {
  * 通过 Elysia.handle 发起 HTTP 请求并解析统一响应结构。
  */
 export async function requestApp<T = unknown>(
-    app: Elysia,
+    app: AnyElysia,
     options: IRequestOptions,
 ): Promise<IAppResponse<T>> {
     const url = new URL(options.path, 'http://localhost')

@@ -7,6 +7,7 @@ const config = lincy({
         ignores: ['**/assets', '**/static', '**/public/global'],
         unicorn: {
             'unicorn/prefer-node-protocol': 'off',
+            'node/prefer-global/process': 'off',
         },
     },
 })

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import { signSessionToken } from '~/utils/jwt-token'
 import { checkJWT } from '~/utils/check-jwt'
+import { signSessionToken } from '~/utils/jwt-token'
 
 describe('checkJWT', () => {
     it('空凭证时返回 false', () => {

@@ -7,8 +7,8 @@ import { createUserAuthGuard } from '~/plugins/auth'
 import { API_CODE } from '~/types/api-code'
 
 import { requestApp } from './helpers/api-client'
-import { getTestFixtures, loginUserViaApi } from './helpers/test-data'
 import { createTestApp } from './helpers/test-app'
+import { getTestFixtures, loginUserViaApi } from './helpers/test-data'
 
 const frontendApp = createTestApp(frontendRouter)
 const protectedApp = createTestApp(

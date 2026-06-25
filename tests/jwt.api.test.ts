@@ -8,8 +8,8 @@ import { createTestApp } from './helpers/test-app'
 
 const jwtApp = createTestApp(jwtRouter)
 
-describe('JWT 接口 /api/jwt', () => {
-    it('GET /sign/:name 签发 Cookie 并返回欢迎语', async () => {
+describe('jWT 接口 /api/jwt', () => {
+    it('get /sign/:name 签发 Cookie 并返回欢迎语', async () => {
         const { status, json, setCookie } = await requestApp<string>(jwtApp, {
             path: '/api/jwt/sign/alice',
         })
@@ -21,7 +21,7 @@ describe('JWT 接口 /api/jwt', () => {
         expect(setCookie).toContain('HttpOnly')
     })
 
-    it('GET /profile 未携带 Cookie 时返回 401', async () => {
+    it('get /profile 未携带 Cookie 时返回 401', async () => {
         const { status, json } = await requestApp<null>(jwtApp, {
             path: '/api/jwt/profile',
         })
@@ -32,7 +32,7 @@ describe('JWT 接口 /api/jwt', () => {
         expect(json.data).toBeNull()
     })
 
-    it('GET /profile 携带有效 Cookie 时返回用户信息', async () => {
+    it('get /profile 携带有效 Cookie 时返回用户信息', async () => {
         const signRes = await requestApp<string>(jwtApp, {
             path: '/api/jwt/sign/bob',
         })

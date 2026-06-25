@@ -4,13 +4,13 @@ import { backendRouter } from '~/modules/backend/backend.controller'
 import { API_CODE } from '~/types/api-code'
 
 import { requestApp } from './helpers/api-client'
-import { getTestFixtures, loginAdminViaApi } from './helpers/test-data'
 import { createTestApp } from './helpers/test-app'
+import { getTestFixtures, loginAdminViaApi } from './helpers/test-data'
 
 const backendApp = createTestApp(backendRouter)
 
 describe('后台接口 /api/backend', () => {
-    it('GET /category/list 返回分类列表', async () => {
+    it('get /category/list 返回分类列表', async () => {
         const fixtures = await getTestFixtures()
 
         const { status, json } = await requestApp<{ list: unknown[] }>(backendApp, {
@@ -23,7 +23,7 @@ describe('后台接口 /api/backend', () => {
         expect(json.data!.list.length).toBeGreaterThanOrEqual(fixtures.categoryCount)
     })
 
-    it('GET /article/list 管理员登录后返回文章列表', async () => {
+    it('get /article/list 管理员登录后返回文章列表', async () => {
         const fixtures = await getTestFixtures()
         const adminCookie = await loginAdminViaApi(
             options => requestApp(backendApp, options),
@@ -41,7 +41,7 @@ describe('后台接口 /api/backend', () => {
         expect(typeof json.data?.total).toBe('number')
     })
 
-    it('POST /admin/login 登录成功并返回管理员信息', async () => {
+    it('post /admin/login 登录成功并返回管理员信息', async () => {
         const fixtures = await getTestFixtures()
 
         const { json } = await requestApp<{ user: string, userid: string, username: string }>(backendApp, {
@@ -58,7 +58,7 @@ describe('后台接口 /api/backend', () => {
         expect(typeof json.data?.user).toBe('string')
     })
 
-    it('GET /admin/logout 返回登出结果', async () => {
+    it('get /admin/logout 返回登出结果', async () => {
         const fixtures = await getTestFixtures()
         const adminCookie = await loginAdminViaApi(
             options => requestApp(backendApp, options),
