@@ -115,7 +115,7 @@ export class FrontendUserService {
                     throw new ApiError(API_CODE.VALIDATION, '该用户名已经存在')
                 }
                 else {
-                    await UserM.create({
+                    const data = {
                         username,
                         password: md5(config.md5_salt + password),
                         email,
@@ -123,7 +123,8 @@ export class FrontendUserService {
                         update_date: getNowTime(),
                         is_delete: 0,
                         timestamp: getNowTime('X'),
-                    })
+                    }
+                    await UserM.create(data)
                     return '注册成功!'
                 }
             }

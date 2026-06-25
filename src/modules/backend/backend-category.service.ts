@@ -56,7 +56,7 @@ export class BackendCategoryService {
         }
 
         try {
-            const creatData = {
+            const data = {
                 cate_name,
                 cate_order,
                 cate_num: 0,
@@ -65,7 +65,7 @@ export class BackendCategoryService {
                 is_delete: 0,
                 timestamp: Number(getNowTime('X')),
             }
-            const result = await CategoryM.create(creatData).then(data => data.toObject())
+            const result = await CategoryM.create(data).then(data => data.toObject())
             return result
         }
         catch (err: unknown) {

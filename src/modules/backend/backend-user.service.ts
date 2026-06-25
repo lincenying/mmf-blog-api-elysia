@@ -129,7 +129,7 @@ export class BackendUserService {
                 message = `${username}: 已经存在`
             }
             else {
-                const body = {
+                const data = {
                     username,
                     password: md5(config.md5_salt + password),
                     email,
@@ -138,7 +138,7 @@ export class BackendUserService {
                     is_delete: 0,
                     timestamp: getNowTime('X'),
                 }
-                await AdminM.create(body)
+                await AdminM.create(data)
                 writeFileSync('./admin.lock', username)
                 message = `添加用户成功: ${username}, 密码: ${password}`
             }
