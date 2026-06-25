@@ -1,4 +1,3 @@
-/* eslint-disable node/prefer-global/process */
 /**
  * 配置管理
  *
@@ -23,9 +22,7 @@ convict.addParser({ extension: ['yml', 'yaml'], parse: yaml.load })
 
 // 创建配置实例
 const configInstance = convict(configSchema, {
-    env: {
-        NODE_ENV: process.env.NODE_ENV,
-    },
+    env: process.env,
 })
 
 // 获取当前环境
