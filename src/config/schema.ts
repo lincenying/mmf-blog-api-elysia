@@ -95,7 +95,7 @@ export const configSchema = {
         port: {
             doc: '服务监听端口',
             format: 'port',
-            default: 4000,
+            default: 14000,
             env: 'PORT',
         },
         host: {
@@ -125,7 +125,7 @@ export const configSchema = {
         origin: {
             doc: '允许访问的源',
             format: 'cors-origin',
-            default: 'http://localhost:4000',
+            default: 'http://localhost:14000',
             env: 'CORS_ORIGIN',
         },
         credentials: {

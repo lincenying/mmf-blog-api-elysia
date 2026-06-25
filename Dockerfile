@@ -37,6 +37,6 @@ COPY ./dist/index.html ./dist/index.html
 
 ENV NODE_ENV=production
 
-EXPOSE 4080
+EXPOSE 14080
 
 CMD ["./server"]

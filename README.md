@@ -21,7 +21,7 @@
 - **管理员初始化**（`/backend`）：Twig 页面首次创建管理员
 - **上传**（`/api/upload`）、**代理**（`/api/proxy`）、**JWT 示例**（`/api/jwt`）
 - **WebSocket**（`/chat`）：聊天室
-- **开发环境 Swagger**：`http://localhost:4000/docs`（仅 `NODE_ENV=development`）
+- **开发环境 Swagger**：`http://localhost:14000/docs`（仅 `NODE_ENV=development`）
 
 ## 环境要求
 
@@ -61,7 +61,7 @@ cp .env.development.example .env.development
 | 变量 | 说明 | 默认 |
 | --- | --- | --- |
 | `NODE_ENV` | `development` / `production` | `development` |
-| `PORT` | 监听端口 | 开发 `4000`，生产配置 `4080` |
+| `PORT` | 监听端口 | 开发 `14000`，生产配置 `14080` |
 | `DATABASE_URL` | MongoDB URI | `mongodb://127.0.0.1:27017` |
 | `MONGO_DB` | MongoDB 库名 | `mmfblog_v2` |
 | `CORS_ORIGIN` | 允许的前端源，逗号分隔 | 见 example 文件 |
@@ -75,12 +75,12 @@ cp .env.development.example .env.development
 bun dev
 ```
 
-- 服务：`http://localhost:4000`
-- API 文档：`http://localhost:4000/docs`
+- 服务：`http://localhost:14000`
+- API 文档：`http://localhost:14000/docs`
 
 ### 5. 初始化管理员
 
-浏览器打开 [http://localhost:4000/backend](http://localhost:4000/backend)，填写表单创建首个管理员。
+浏览器打开 [http://localhost:14000/backend](http://localhost:14000/backend)，填写表单创建首个管理员。
 
 成功后项目根目录会生成 `admin.lock` 防止重复创建；如需再次添加，**删除该文件**后刷新页面。
 
@@ -179,13 +179,13 @@ interface IApiResponse<T = unknown> {
 ```bash
 docker build -t lincenying/bun-api-server:latest -f ./Dockerfile .
 docker run -d \
-  -p 4080:4080 \
+  -p 14080:14080 \
   --env-file .env \
   --name container-bun-api-server \
   lincenying/bun-api-server:latest
 ```
 
-镜像内默认 `NODE_ENV=production`，监听 **4080**（见 `config/production.yaml`）。
+镜像内默认 `NODE_ENV=production`，监听 **14080**（见 `config/production.yaml`）。
 
 ### docker-compose（API + MongoDB）
 
@@ -204,7 +204,7 @@ volumes:
 chmod +x ./deploy-prod.sh && ./deploy-prod.sh
 ```
 
-访问：`http://localhost:4080`
+访问：`http://localhost:14080`
 
 常用命令：
 

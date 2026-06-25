@@ -21,7 +21,7 @@ const wsRe = /^ws:\/\//i
 createApp({
     setup() {
         // 响应式数据
-        const serverInput = ref('localhost:4000')
+        const serverInput = ref('localhost:14000')
         const roomInput = ref('general')
         const nameInput = ref('旅行者')
         const isConnected = ref(false)
@@ -114,7 +114,7 @@ createApp({
             const name = nameInput.value.trim()
 
             if (!server) {
-                addLocalSystem('❌ 请填写服务器地址 (例如 localhost:4000)')
+                addLocalSystem('❌ 请填写服务器地址 (例如 localhost:14000)')
                 return
             }
             if (!room) {
@@ -234,7 +234,7 @@ createApp({
 
         // 组件挂载时，添加初始提示
         onMounted(() => {
-            addLocalSystem('✨ 提示: 确保Elysia后端已启动，填写服务器地址(如 localhost:4000)，房间和昵称后点击连接')
+            addLocalSystem('✨ 提示: 确保Elysia后端已启动，填写服务器地址(如 localhost:14000)，房间和昵称后点击连接')
         })
 
         // 组件卸载时断开连接

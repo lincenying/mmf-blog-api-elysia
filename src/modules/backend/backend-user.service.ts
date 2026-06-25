@@ -25,11 +25,7 @@ export class BackendUserService {
         const skip = (page - 1) * limit
         try {
             const [list, total] = await Promise.all([
-                AdminM.find()
-                    .sort(sort)
-                    .skip(skip)
-                    .limit(limit)
-                    .lean(),
+                AdminM.find().sort(sort).skip(skip).limit(limit).lean(),
                 AdminM.countDocuments(),
             ])
             const totalPage = Math.ceil(total / limit)
