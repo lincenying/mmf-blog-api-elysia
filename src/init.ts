@@ -50,7 +50,9 @@ function creatProjectFiles() {
     }
 
     if (!fsExistsSync('./.env')) {
-        const env = `TAG=1.26.0625`
+        const env = `TAG=1.26.0625
+MONGODB_DIR=/data/db
+`
         writeFileSync('./.env', env)
         console.log('./.env: 生成成功')
     }
