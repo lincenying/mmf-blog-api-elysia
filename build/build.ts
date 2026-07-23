@@ -4,7 +4,7 @@
         minify: {
             whitespace: true,
             syntax: true,
-            identifiers: true,
+            identifiers: false,
         },
         outdir: './dist',
         target: 'bun',

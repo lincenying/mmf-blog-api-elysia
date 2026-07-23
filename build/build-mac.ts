@@ -15,7 +15,7 @@
         minify: {
             whitespace: true,
             syntax: true,
-            identifiers: true,
+            identifiers: false,
         },
         define: {
             'process.env.NODE_ENV': JSON.stringify('production'),
