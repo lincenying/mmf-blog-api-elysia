@@ -1,24 +1,24 @@
 services:
 
-  api_bun:
-    container_name: api-bun-server
-    image: lincenying/bun-api-server:${TAG}
+  api_bun_mongodb:
+    container_name: api-bun-mongodb
+    image: lincenying/api-bun-mongodb:${TAG}
     build:
       context: .
       dockerfile: ./Dockerfile
     environment:
-      DATABASE_URL: mongodb://api_mongo:27017
+      DATABASE_URL: mongodb://db_mongo:27017
     env_file:
       - .env
     ports:
       - 14080:14080
     depends_on:
-      - api_mongo
+      - db_mongo
     networks:
       - webnet
 
-  api_mongo:
-    container_name: api-bun-mongo-server
+  db_mongo:
+    container_name: db-mongo
     image: mongo:7
     volumes:
       - ${MONGODB_DIR:-/data/db}:/data/db

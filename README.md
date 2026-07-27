@@ -177,12 +177,12 @@ interface IApiResponse<T = unknown> {
 宿主机已有 MongoDB 时，可在 `docker-compose.yml` 或运行参数中设置 `DATABASE_URL`（示例：`mongodb://host.docker.internal:27017`）。
 
 ```bash
-docker build -t lincenying/bun-api-server:latest -f ./Dockerfile .
+docker build -t lincenying/api-bun-mongodb:latest -f ./Dockerfile .
 docker run -d \
   -p 14080:14080 \
   --env-file .env \
-  --name container-bun-api-server \
-  lincenying/bun-api-server:latest
+  --name container-api-bun-mongodb \
+  lincenying/api-bun-mongodb:latest
 ```
 
 镜像内默认 `NODE_ENV=production`，监听 **14080**（见 `config/production.yaml`）。
