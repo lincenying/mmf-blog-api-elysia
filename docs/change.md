@@ -1,5 +1,19 @@
 # 变更记录
 
+## 2026-07-28 14:35:00
+
+- **分类**：移除 categories 相关 `update_date` 字段（数据库中不存在该字段），同步清理 Schema、类型定义及新增/编辑写入逻辑。
+
+---
+
+**本次改动建议的 commit message（未自动提交）：**
+
+```
+fix: 移除分类表不存在的 update_date 字段
+```
+
+---
+
 ## 2026-06-25 12:00:00
 
 - **测试**：`tests/helpers/api-client.ts`、`tests/helpers/test-app.ts` 将 `Elysia` 参数类型改为官方 `AnyElysia`，修复带路由前缀的 router 传入时的 TS 泛型不兼容。
