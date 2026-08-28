@@ -1,4 +1,3 @@
-/* eslint-disable node/prefer-global/process */
 import { serverTiming } from '@elysiajs/server-timing'
 import { Elysia, file } from 'elysia'
 

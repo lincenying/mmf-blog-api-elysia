@@ -1,4 +1,3 @@
-/* eslint-disable node/prefer-global/process */
 import { mkdir } from 'fs/promises'
 
 import { createApp } from '~/app'
