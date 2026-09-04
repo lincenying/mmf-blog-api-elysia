@@ -39,13 +39,15 @@ CommentSchema.virtual('id').get(function () {
 // CommentSchema.alias('userid', 'user')
 
 // 多表关联
-// CommentSchema.virtual('user', {
-//     ref: 'User', // model name
-//     localField: 'userid', // 本地字段
-//     foreignField: '_id', // 跨表字段
-//     justOne: true,
-//     autopopulate: { path: 'user', select: '_id email username' },
-// })
+/**
+CommentSchema.virtual('user', {
+    ref: 'User', // model name
+    localField: 'userid', // 本地字段
+    foreignField: '_id', // 跨表字段
+    justOne: true,
+    autopopulate: { path: 'user', select: '_id email username' },
+})
+ */
 
 CommentSchema.plugin(mongooseAutopopulate)
 

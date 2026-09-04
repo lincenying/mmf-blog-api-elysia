@@ -1,4 +1,4 @@
-FROM oven/bun:1.3 AS build
+FROM oven/bun:1 AS build
 
 WORKDIR /app
 
@@ -22,9 +22,15 @@ RUN bun build \
 	--outfile server \
 	src/index.ts
 
-FROM oven/bun:1.3
+FROM debian:bookworm-slim
 
 WORKDIR /app
+
+# 使用阿里云 Debian 镜像，避免构建时访问 deb.debian.org 失败
+RUN sed -i 's|deb.debian.org|mirrors.aliyun.com|g' /etc/apt/sources.list.d/debian.sources \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/server server
 COPY ./package.json ./package.json

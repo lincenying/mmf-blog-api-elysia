@@ -4,15 +4,15 @@
 
 ## 技术栈
 
-| 类别 | 选型 |
-| --- | --- |
-| 运行时 | Bun |
-| Web 框架 | Elysia.js |
-| 数据存储 | MongoDB（Mongoose） |
-| 身份验证 | JWT + HttpOnly Cookie |
-| 配置 | Convict（YAML + 环境变量） |
-| 模板 | Twig |
-| 部署 | Docker / docker-compose |
+| 类别     | 选型                       |
+| -------- | -------------------------- |
+| 运行时   | Bun                        |
+| Web 框架 | Elysia.js                  |
+| 数据存储 | MongoDB（Mongoose）        |
+| 身份验证 | JWT + HttpOnly Cookie      |
+| 配置     | Convict（YAML + 环境变量） |
+| 模板     | Twig                       |
+| 部署     | Docker / docker-compose    |
 
 ## 功能概览
 
@@ -45,8 +45,8 @@ bun run init:config
 
 会在 `src/config/` 下生成（已加入 `.gitignore`，勿提交仓库）：
 
-- `_secret.js` — JWT 签名密钥
-- `_qiniu.js` — 七牛云占位（按需填写）
+- _secret.js: JWT 签名密钥
+- _qiniu.js: 七牛云占位（按需填写）
 
 ### 3. 配置环境
 
@@ -58,14 +58,14 @@ cp .env.development.example .env.development
 
 常用变量：
 
-| 变量 | 说明 | 默认 |
-| --- | --- | --- |
-| `NODE_ENV` | `development` / `production` | `development` |
-| `PORT` | 监听端口 | 开发 `14000`，生产配置 `14080` |
-| `DATABASE_URL` | MongoDB URI | `mongodb://127.0.0.1:27017` |
-| `MONGO_DB` | MongoDB 库名 | `mmfblog_v2` |
-| `CORS_ORIGIN` | 允许的前端源，逗号分隔 | 见 example 文件 |
-| `JWT_EXPIRES_IN_SECONDS` | Cookie / JWT 有效期（秒） | `2592000` |
+| 变量                     | 说明                         | 默认                           |
+| ------------------------ | ---------------------------- | ------------------------------ |
+| `NODE_ENV`               | `development` / `production` | `development`                  |
+| `PORT`                   | 监听端口                     | 开发 `14000`，生产配置 `14080` |
+| `DATABASE_URL`           | MongoDB URI                  | `mongodb://127.0.0.1:27017`    |
+| `MONGO_DB`               | MongoDB 库名                 | `mmfblog_v2`                   |
+| `CORS_ORIGIN`            | 允许的前端源，逗号分隔       | 见 example 文件                |
+| `JWT_EXPIRES_IN_SECONDS` | Cookie / JWT 有效期（秒）    | `2592000`                      |
 
 ### 4. 启动开发服务
 
@@ -109,17 +109,17 @@ bun run build:compile:win    # → ./server-win.exe
 
 ## API 路由前缀
 
-| 前缀 | 说明 |
-| --- | --- |
-| `/api/frontend` | 前台博客接口 |
-| `/api/backend` | 后台管理接口（部分路由需管理员 Cookie） |
-| `/backend` | 管理员初始化 Twig 页面 |
-| `/api/upload` | 文件上传 |
-| `/api/jwt` | JWT 示例 |
-| `/api/proxy` | 代理转发 |
-| `/chat` | WebSocket 聊天 |
-| `/public` | 静态资源（见 `config/*.yaml` 中 `static.prefix`） |
-| `/docs` | Swagger（仅开发环境） |
+| 前缀            | 说明                                              |
+| --------------- | ------------------------------------------------- |
+| `/api/frontend` | 前台博客接口                                      |
+| `/api/backend`  | 后台管理接口（部分路由需管理员 Cookie）           |
+| `/backend`      | 管理员初始化 Twig 页面                            |
+| `/api/upload`   | 文件上传                                          |
+| `/api/jwt`      | JWT 示例                                          |
+| `/api/proxy`    | 代理转发                                          |
+| `/chat`         | WebSocket 聊天                                    |
+| `/public`       | 静态资源（见 `config/*.yaml` 中 `static.prefix`） |
+| `/docs`         | Swagger（仅开发环境）                             |
 
 ## 统一响应格式
 
@@ -161,12 +161,12 @@ interface IApiResponse<T = unknown> {
 
 当前依赖 `mongoose@^9.6.1`，请与 MongoDB Server 主版本匹配：
 
-| MongoDB Server | Mongoose |
-| --- | --- |
-| 8.x | ^8.7.0 \| ^9.0.0 |
-| 7.x | ^7.4.0 \| ^8.0.0 \| ^9.0.0 |
-| 6.x | ^7.0.0 \| ^8.0.0 \| ^9.0.0 |
-| 5.x | ^6.0.0 \| ^7.0.0 \| ^8.0.0 |
+| MongoDB Server | Mongoose                   |
+| -------------- | -------------------------- |
+| 8.x            | ^8.7.0 \| ^9.0.0           |
+| 7.x            | ^7.4.0 \| ^8.0.0 \| ^9.0.0 |
+| 6.x            | ^7.0.0 \| ^8.0.0 \| ^9.0.0 |
+| 5.x            | ^6.0.0 \| ^7.0.0 \| ^8.0.0 |
 
 若连接异常，请对照上表调整 `mongoose` 版本后重新 `bun install`。
 

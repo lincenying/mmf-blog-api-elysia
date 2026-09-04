@@ -195,9 +195,9 @@ refactor: 集中 JWT/会话工具、统一 API_CODE 并完善配置示例
 - **目录规范**：新增 `src/db/index.ts` 统一导出 Drizzle 实例（`sqliteDb` / `postgreDb`）。
 - **配置**：`config/schema.ts` 增加 `jwt.expiresInSeconds`，登录 Cookie `maxAge` 与 `jwt.sign` 的 `expiresIn` 均从配置读取。
 - **插件化**：
-  - `src/plugins/api-stack.ts`（自 `utils/api-stack` 迁入）；
-  - `src/plugins/auth.ts`：`createAdminAuthGuard` / `createUserAuthGuard`，消除 Controller 内重复的 `checkJWT`；
-  - `plugins/index.ts` 统一导出 CORS、响应包装、鉴权、API 栈、访问日志。
+    - `src/plugins/api-stack.ts`（自 `utils/api-stack` 迁入）；
+    - `src/plugins/auth.ts`：`createAdminAuthGuard` / `createUserAuthGuard`，消除 Controller 内重复的 `checkJWT`；
+    - `plugins/index.ts` 统一导出 CORS、响应包装、鉴权、API 栈、访问日志。
 - **响应格式**：`response-wrapper` 对齐 `IApiResponse`（`code` / `message` / `data`），错误时 `data: null`；`ApiResponse` 类型改为 `IApiResponse` 别名。
 - **路由**：后台/前台 Controller 公开路由置于鉴权插件之前；上传/JWT 模块复用 `createPublicApiLayer` / `createCookieSessionApiLayer`。
 - **Bun 兼容**：`node:fs` / `node:crypto` / `node:path` 改为 `fs` / `path` 与 `crypto.randomUUID()`。
@@ -232,7 +232,7 @@ refactor: 将 Mongoose schema 集中到 modules/mongoose
 
 ## 2026-05-20 18:00:00
 
-- **Mongoose Model 迁入模块**：原 `src/models/*.model.ts` 全部移至对应模块目录——`modules/backend/`（`backend-article`、`backend-category`、`backend-user`）、`modules/frontend/`（`frontend-article`、`frontend-user`、`frontend-comment`、`frontend-like`）。
+- **Mongoose Model 迁入模块**：原 `src/models/*.model.ts` 全部移至对应模块目录: `modules/backend/`（`backend-article`、`backend-category`、`backend-user`）、`modules/frontend/`（`frontend-article`、`frontend-user`、`frontend-comment`、`frontend-like`）。
 - **引用**：各 `*.service.ts` 改为相对路径 `./xxx.model` 引入；已删除空置的 `src/models/`。
 - **规范**：`.cursor/rules/global-01-elysia.mdc` 项目结构中补充 `module.model.ts` 说明（与 Drizzle `db/schema` 并存场景）。
 
